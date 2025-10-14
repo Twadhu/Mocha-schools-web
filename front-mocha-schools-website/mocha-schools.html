@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-ar="مدارس المخا | Mocha Schools" data-en="Mocha Schools" data-zh="摩卡学校" data-ru="Школы Мокки">مدارس المخا | Mocha Schools</title>
+
+    <!-- SEO & Metadata -->
+    <meta name="description" content="مدارس المخا: بوابة الطالب والمعلم، المنح الدراسية، الأخبار والأنشطة.">
+    <meta name="theme-color" content="#2563eb" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#1e293b" media="(prefers-color-scheme: dark)">
+    <link rel="icon" href="Gemini_Generated_Image_677g6v677g6v677g.png" type="image/png">
+    <link rel="apple-touch-icon" href="Gemini_Generated_Image_677g6v677g6v677g.png">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Poppins:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <!-- Custom Styles -->
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --font-ar: 'Tajawal', sans-serif;
+            --font-en: 'Poppins', sans-serif;
+            --font-zh: 'Noto Sans SC', sans-serif;
+            --font-ru: 'Roboto', sans-serif;
+        }
+        html[lang="ar"] body { font-family: var(--font-ar); }
+        html[lang="en"] body { font-family: var(--font-en); }
+        html[lang="zh"] body { font-family: var(--font-zh); }
+        html[lang="ru"] body { font-family: var(--font-ru); }
+
+        html { scroll-behavior: smooth; }
+        .scholarship-container::-webkit-scrollbar { height: 8px; }
+        .scholarship-container::-webkit-scrollbar-track { background-color: #e5e7eb; border-radius: 10px; }
+        .scholarship-container::-webkit-scrollbar-thumb { background-color: var(--primary-color); border-radius: 10px; }
+        .scholarship-container::-webkit-scrollbar-thumb:hover { background-color: var(--primary-hover); }
+        .mobile-menu { transition: transform 0.3s ease-in-out; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <!-- Header -->
+    <header class="bg-white/80 backdrop-blur-lg shadow-sm sticky top-0 z-50">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="#home" class="flex items-center gap-3">
+                <img src="Gemini_Generated_Image_677g6v677g6v677g.png" alt="Mocha Schools Logo" class="w-10 h-10 rounded-full object-cover">
+                <h1 class="text-xl font-bold text-blue-600" data-ar="مدارس المخا" data-en="Mocha Schools" data-zh="摩卡学校" data-ru="Школы Мокки">مدارس المخا</h1>
+            </a>
+
+            <div class="flex items-center gap-4">
+                <ul class="hidden md:flex items-center space-x-8 rtl:space-x-reverse">
+                    <li><a href="#home" class="text-gray-600 hover:text-blue-600 transition duration-300" data-ar="الرئيسية" data-en="Home" data-zh="主页" data-ru="Главная">الرئيسية</a></li>
+                    <li><a href="#about" class="text-gray-600 hover:text-blue-600 transition duration-300" data-ar="من نحن" data-en="About Us" data-zh="关于我们" data-ru="О нас">من نحن</a></li>
+                    <li><a href="#scholarships" class="text-gray-600 hover:text-blue-600 transition duration-300" data-ar="المنح" data-en="Scholarships" data-zh="奖学金" data-ru="Стипендии">المنح</a></li>
+                    <li><a href="#news" class="text-gray-600 hover:text-blue-600 transition duration-300" data-ar="الأخبار" data-en="News" data-zh="新闻" data-ru="Новости">الأخبار</a></li>
+                </ul>
+
+                <!-- Language Switcher -->
+                <div class="relative">
+                    <button id="lang-switcher-button" class="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 p-2 rounded-full">
+                        <span id="current-lang-flag"></span>
+                        <span id="current-lang-name" class="hidden md:block font-semibold text-sm"></span>
+                    </button>
+                    <div id="lang-switcher-menu" class="hidden absolute top-full mt-2 right-0 bg-white rounded-lg shadow-xl border w-40 z-10">
+                        <a href="#" onclick="changeLanguage('ar')" class="flex items-center gap-2 p-2 hover:bg-gray-100"><span>🇾🇪</span> العربية</a>
+                        <a href="#" onclick="changeLanguage('en')" class="flex items-center gap-2 p-2 hover:bg-gray-100"><span>🇬🇧</span> English</a>
+                        <a href="#" onclick="changeLanguage('zh')" class="flex items-center gap-2 p-2 hover:bg-gray-100"><span>🇨🇳</span> 中文</a>
+                        <a href="#" onclick="changeLanguage('ru')" class="flex items-center gap-2 p-2 hover:bg-gray-100"><span>🇷🇺</span> Русский</a>
+                    </div>
+                </div>
+                 <a href="student-login.html" class="hidden md:block bg-blue-600 text-white px-5 py-2 rounded-full hover:bg-blue-700 transition duration-300 text-sm font-semibold" data-ar="بوابة الطالب" data-en="Student Portal" data-zh="学生门户" data-ru="Портал студента">بوابة الطالب</a>
+                 <a href="teacher-login.html" class="hidden md:block bg-gray-700 text-white px-5 py-2 rounded-full hover:bg-gray-800 transition duration-300 text-sm font-semibold" data-ar="بوابة المعلم" data-en="Teacher Portal" data-zh="教师门户" data-ru="Портал преподавателя">بوابة المعلم</a>
+            </div>
+            <button id="mobile-menu-button" class="md:hidden text-gray-700">
+                <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" /></svg>
+            </button>
+        </nav>
+        
+        <div id="mobile-menu" class="mobile-menu absolute top-full left-0 w-full bg-white shadow-lg md:hidden -translate-x-full rtl:translate-x-full">
+            <!-- Mobile nav links will be injected by JS -->
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section id="home" class="relative text-white pt-24 pb-32 overflow-hidden">
+             <div class="absolute inset-0 bg-black">
+                <img src="Gemini_Generated_Image_677g6v677g6v677g.png" alt="Mocha Port historical view" class="w-full h-full object-cover opacity-40">
+            </div>
+            <div class="container mx-auto px-6 text-center relative z-10">
+                <h1 class="text-4xl md:text-6xl font-extrabold mb-4 leading-tight" data-ar="مرحباً بكم في مدارس المخا" data-en="Welcome to Mocha Schools" data-zh="欢迎来到摩卡学校" data-ru="Добро пожаловать в Школы Мокки">مرحباً بكم في مدارس المخا</h1>
+                <p class="text-lg md:text-xl text-gray-200 max-w-3xl mx-auto mb-8" data-ar="نحن ملتزمون بتقديم تعليم عالي الجودة يلهم الطلاب لتحقيق إمكاناتهم الكاملة." data-en="Committed to providing quality education that inspires students to achieve their full potential." data-zh="致力于提供优质教育，激励学生充分发挥潜力。" data-ru="Мы стремимся предоставлять качественное образование, которое вдохновляет студентов на полное раскрытие своего потенциала.">نحن ملتزمون بتقديم تعليم عالي الجودة.</p>
+                <div class="flex justify-center items-center gap-4 flex-wrap">
+                    <a href="start-now.html" class="bg-white text-blue-600 font-bold py-3 px-8 rounded-full text-lg hover:bg-blue-100 transition duration-300 shadow-lg transform hover:scale-105" data-ar="ابدأ الآن" data-en="Start Now" data-zh="现在开始" data-ru="Начать сейчас">ابدأ الآن</a>
+                    <a href="#about" class="border-2 border-gray-300 text-white font-bold py-3 px-8 rounded-full text-lg hover:bg-white hover:text-gray-800 transition" data-ar="اعرف المزيد" data-en="Learn More" data-zh="了解更多" data-ru="Узнать больше">اعرف المزيد</a>
+                </div>
+            </div>
+        </section>
+
+         <section id="about" class="py-20 bg-white">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold mb-3" data-ar="مدارسنا" data-en="Our Schools" data-zh="我们的学校" data-ru="Наши школы">مدارسنا</h2>
+                    <p class="text-gray-600 max-w-2xl mx-auto" data-ar="نفخر بتقديم بيئة تعليمية متنوعة وداعمة في جميع مدارسنا." data-en="We pride ourselves on a diverse and supportive learning environment across our schools." data-zh="我们为所有学校提供多元化和支持性的学习环境而感到自豪。" data-ru="Мы гордимся разнообразной и поддерживающей учебной средой во всех наших школах.">نفخر بتقديم بيئة تعليمية متنوعة وداعمة.</p>
+                </div>
+                <div id="schools-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- School Cards will be rendered dynamically -->
+                </div>
+            </div>
+        </section>
+        <section id="scholarships" class="py-20 bg-gray-50">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12"><h2 class="text-3xl md:text-4xl font-bold mb-3" data-ar="فرص المنح الدراسية" data-en="Scholarship Opportunities" data-zh="奖学金机会" data-ru="Возможности стипендий">فرص المنح الدراسية</h2><p class="text-gray-600 max-w-2xl mx-auto" data-ar="استكشف مجموعة من المنح الدراسية المتاحة لطلابنا الموهوبين." data-en="Explore a range of available scholarships for our talented students." data-zh="探索为我们才华横溢的学生提供的一系列奖学金。" data-ru="Ознакомьтесь с широким выбором стипендий для наших талантливых студентов.">استكشف مجموعة من المنح الدراسية.</p></div>
+                <div class="relative"><div id="scholarship-container" class="scholarship-container flex gap-8 overflow-x-auto pb-6 snap-x snap-mandatory"></div><button id="scroll-left" class="absolute left-0 top-1/2 -translate-y-1/2 bg-white/80 rounded-full p-2 shadow-md hover:bg-white transition hidden md:block rtl:left-auto rtl:right-0"><svg class="w-6 h-6 text-gray-700 rtl:rotate-180" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg></button><button id="scroll-right" class="absolute right-0 top-1/2 -translate-y-1/2 bg-white/80 rounded-full p-2 shadow-md hover:bg-white transition hidden md:block rtl:right-auto rtl:left-0"><svg class="w-6 h-6 text-gray-700 rtl:rotate-180" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg></button></div>
+            </div>
+        </section>
+        <section id="news" class="py-20 bg-white">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12"><h2 class="text-3xl md:text-4xl font-bold mb-3" data-ar="آخر الأخبار والأنشطة" data-en="Latest News & Activities" data-zh="最新新闻与活动" data-ru="Последние новости и мероприятия">آخر الأخبار والأنشطة</h2><p class="text-gray-600 max-w-2xl mx-auto" data-ar="ابقَ على اطلاع دائم بآخر الأحداث والإعلانات من مجتمعنا المدرسي." data-en="Stay up-to-date with the latest events and announcements from our school community." data-zh="及时了解我们学校社区的最新活动和公告。" data-ru="Будьте в курсе последних событий и объявлений нашего школьного сообщества.">ابقَ على اطلاع دائم بآخر الأحداث.</p></div>
+                <div id="news-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+            </div>
+        </section>
+    </main>
+
+    <a href="account-request.html" class="fixed bottom-6 rtl:left-6 ltr:right-6 bg-blue-600 text-white p-4 rounded-full shadow-lg hover:bg-blue-700 transition transform hover:scale-110 z-40" title="اطلب حساب">
+        <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+    </a>
+
+    <footer class="bg-gray-800 text-white">
+        <div class="container mx-auto px-6 py-10">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                <div class="col-span-2 md:col-span-1">
+                    <div class="flex items-center gap-3 mb-2">
+                        <img src="Gemini_Generated_Image_677g6v677g6v677g.png" alt="Mocha Schools Logo" class="w-10 h-10 rounded-full object-cover">
+                         <h3 class="font-bold text-lg" data-ar="مدارس المخا" data-en="Mocha Schools" data-zh="摩卡学校" data-ru="Школы Мокки">مدارس المخا</h3>
+                    </div>
+                    <p class="text-gray-400 text-sm" data-ar="منصة تعليمية حديثة للطالب والمعلم." data-en="A modern educational platform for students and teachers." data-zh="为学生和教师提供的现代化教育平台。" data-ru="Современная образовательная платформа для учеников и учителей.">منصة تعليمية حديثة.</p>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-3" data-ar="روابط سريعة" data-en="Quick Links" data-zh="快速链接" data-ru="Быстрые ссылки">روابط سريعة</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#about" class="text-gray-400 hover:text-white text-sm" data-ar="من نحن" data-en="About Us" data-zh="关于我们" data-ru="О нас">من نحن</a></li>
+                        <li><a href="start-now.html" class="text-gray-400 hover:text-white text-sm" data-ar="ابدأ الآن" data-en="Start Now" data-zh="现在开始" data-ru="Начать сейчас">ابدأ الآن</a></li>
+                        <li><a href="apply.html" class="text-gray-400 hover:text-white text-sm" data-ar="قدّم من خلالنا" data-en="Apply Through Us" data-zh="通过我们申请" data-ru="Подать через нас">قدّم من خلالنا</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-3" data-ar="سياسات ودعم" data-en="Policies & Support" data-zh="政策与支持" data-ru="Политики и поддержка">سياسات ودعم</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white text-sm" data-ar="سياسة الخصوصية" data-en="Privacy Policy" data-zh="隐私政策" data-ru="Политика конфиденциальности">سياسة الخصوصية</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white text-sm" data-ar="الشروط والأحكام" data-en="Terms & Conditions" data-zh="条款与条件" data-ru="Условия и положения">الشروط والأحكام</a></li>
+                        <li><a href="support.html" class="text-gray-400 hover:text-white text-sm" data-ar="الدعم الفني" data-en="Technical Support" data-zh="技术支持" data-ru="Техподдержка">الدعم الفني</a></li>
+                    </ul>
+                </div>
+                 <div>
+                    <h4 class="font-semibold mb-3" data-ar="تواصل" data-en="Contact" data-zh="联系方式" data-ru="Контакты">تواصل</h4>
+                    <p class="text-gray-400 text-sm">Abdullah Faisal Abbas</p>
+                    <a href="tel:+77475649257" class="text-gray-400 hover:text-white text-sm block mt-1">+7 747 564 9257</a>
+                    <a href="mailto:support@mokha-schools.com" class="text-gray-400 hover:text-white text-sm block">support@mokha-schools.com</a>
+                </div>
+            </div>
+            <div class="mt-8 border-t border-gray-700 pt-6 text-center text-gray-500 text-sm"><p>&copy; <span id="current-year"></span> Mocha Schools. All rights reserved.</p></div>
+        </div>
+    </footer>
+
+    <script>
+        const schoolsData = [
+            { id: 1, name_ar: "مدرسة الفقيد محمد عبدالله السراجي", name_en: "Al-Saraji School", name_zh: "萨拉吉学校", name_ru: "Школа Ас-Сараджи", director_ar: "منصور الوجيه", director_en: "Mansour Al-Wajeeh", director_zh: "曼苏尔·瓦吉", director_ru: "Мансур Аль-Ваджих", link: "Schools-active/Al-faqaid/school-activities-alsaraji.html", theme: "blue", image: "S3photo.jpg" },
+            { id: 2, name_ar: "مدرسة الشهيد اللقية", name_en: "Al-Luqya Martyr School", name_zh: "烈士学校", name_ru: "Школа мученика Аль-Лукья", director_ar: "محمد عبده خلف", director_en: "Mohammed Abdo Khalaf", director_zh: "穆罕默德·阿卜杜·哈拉夫", director_ru: "Мохаммед Абдо Халаф", link: "Schools-active/Aluqaya/school-activities-laqiya.html", theme: "green", image: "S2photo.jpg" },
+            { id: 3, name_ar: "مدرسة النور بالثوباني", name_en: "Al-Noor School, Thobani", name_zh: "阿尔努尔学校", name_ru: "Школа Ан-Нур, Тубани", director_ar: "أنور جاموس", director_en: "Anwar Jammous", director_zh: "安瓦尔·贾穆斯", director_ru: "Анвар Джаммус", link: "Schools-active/Alnoor/school-activities-alnoor.html", theme: "yellow", image: "S1photo.png" }
+        ];
+        
+        const scholarshipsData = [
+            { title_ar: "المنحة التركية", title_en: "Turkish Scholarship", title_zh: "土耳其奖学金", title_ru: "Турецкая стипендия", country_ar: "تركيا", country_en: "Turkey", country_zh: "土耳其", country_ru: "Турция", description_ar: "منحة ممولة بالكامل لجميع المستويات.", description_en: "Fully funded scholarship for all levels.", description_zh: "为所有级别提供全额资助的奖学金。", description_ru: "Полностью финансируемая стипендия для всех уровней.", flag: "🇹🇷", href: "scholarship-turkey.html" },
+            { title_ar: "منحة حكومة بروناي", title_en: "Brunei Gov. Scholarship", title_zh: "文莱政府奖学金", title_ru: "Стипендия прав. Брунея", country_ar: "بروناي", country_en: "Brunei", country_zh: "文莱", country_ru: "Бруней", description_ar: "منحة ممولة بالكامل للدبلوم والبكالوريوس والماجستير.", description_en: "Fully funded for diploma, bachelor, and master.", description_zh: "为文凭、学士和硕士提供全额资助。", description_ru: "Полное финансирование для диплом, бакалавриат, магистратура.", flag: "🇧🇳", href: "Scholarship_Dar_Al-Salam.html" },
+            { title_ar: "منحة ديانة التركية", title_en: "Turkish Diyanet Scholarship", title_zh: "土耳其宗教基金会奖学金", title_ru: "Стипендия Диянет", country_ar: "تركيا", country_en: "Turkey", country_zh: "土耳其", country_ru: "Турция", description_ar: "لدراسة العلوم الإسلامية والثانوية.", description_en: "For Islamic and high school studies.", description_zh: "用于伊斯兰和高中研究。", description_ru: "Для изучения ислама и средней школы.", flag: "🇹🇷", href: "scholarship-diyanet.html" },
+            { title_ar: "منحة الحكومة الصينية", title_en: "Chinese Gov. Scholarship", title_zh: "中国政府奖学金", title_ru: "Стипендия прав. Китая", country_ar: "الصين", country_en: "China", country_zh: "中国", country_ru: "Китай", description_ar: "برامج متنوعة في أفضل الجامعات.", description_en: "Diverse programs in top universities.", description_zh: "顶尖大学的多元化课程。", description_ru: "Разнообразные программы в лучших университетах.", flag: "🇨🇳", href: "scholarship-china-type-b.html" },
+            { title_ar: "منحة الحكومة اليابانية", title_en: "Japanese Gov. Scholarship", title_zh: "日本政府奖学金", title_ru: "Стипендия прав. Японии", country_ar: "اليابان", country_en: "Japan", country_zh: "日本", country_ru: "Япония", description_ar: "برامج ممولة للبكالوريوس والماجستير والدكتوراه.", description_en: "Funded programs for bachelor, master, and PhD.", description_zh: "为学士、硕士和博士提供资助。", description_ru: "Финансируемые программы для бакалавриата, магистратуры и аспирантуры.", flag: "🇯🇵", href: "Scholarship_Japan.html" },
+            { title_ar: "منحة الحكومة الرومانية", title_en: "Romanian Gov. Scholarship", title_zh: "罗马尼亚政府奖学金", title_ru: "Стипендия прав. Румынии", country_ar: "رومانيا", country_en: "Romania", country_zh: "罗马尼亚", country_ru: "Румыния", description_ar: "للطلاب الدوليين من خارج الاتحاد الأوروبي.", description_en: "For non-EU international students.", description_zh: "面向非欧盟国际学生。", description_ru: "Для иностранных студентов не из ЕС.", flag: "🇷🇴", href: "scholarship-romania.html" },
+            { title_ar: "منحة كازاخستان", title_en: "Kazakhstan Scholarship", title_zh: "哈萨克斯坦奖学金", title_ru: "Стипендия Казахстана", country_ar: "كازاخستان", country_en: "Kazakhstan", country_zh: "哈萨克斯坦", country_ru: "Казахстан", description_ar: "تغطي الرسوم الدراسية وراتب شهري.", description_en: "Covers tuition fees and a monthly stipend.", description_zh: "包括学费和每月津贴。", description_ru: "Покрывает обучение и ежемесячную стипендию.", flag: "🇰🇿", href: "scholarship-kazakhstan.html" },
+            { title_ar: "الدراسة في السعودية", title_en: "Study in Saudi Arabia", title_zh: "在沙特阿拉伯学习", title_ru: "Учеба в Саудовской Аравии", country_ar: "السعودية", country_en: "Saudi Arabia", country_zh: "沙特阿拉伯", country_ru: "Саудовская Аравия", description_ar: "منح داخلية وخارجية للطلاب المتميزين.", description_en: "Internal and external grants for distinguished students.", description_zh: "为优秀学生提供国内外助学金。", description_ru: "Внутренние и внешние гранты для выдающихся студентов.", flag: "🇸🇦", href: "scholarship-study-in-saudi.html" },
+            { title_ar: "منح دولة قطر", title_en: "Qatar Scholarships", title_zh: "卡塔尔奖学金", title_ru: "Стипендии Катара", country_ar: "قطر", country_en: "Qatar", country_zh: "卡塔尔", country_ru: "Катар", description_ar: "منح تنافسية في جامعات مرموقة.", description_en: "Competitive scholarships at prestigious universities.", description_zh: "著名大学的竞争性奖学金。", description_ru: "Конкурсные стипендии в престижных университетах.", flag: "🇶🇦", href: "Scholarship_Qatar.html" },
+            { title_ar: "الدراسة في العراق", title_en: "Study in Iraq", title_zh: "在伊拉克学习", title_ru: "Учеба в Ираке", country_ar: "العراق", country_en: "Iraq", country_zh: "伊拉克", country_ru: "Ирак", description_ar: "فرص تعليمية متنوعة في الجامعات العراقية.", description_en: "Various educational opportunities in Iraqi universities.", description_zh: "伊拉克大学的各种教育机会。", description_ru: "Различные образовательные возможности в иракских университетах.", flag: "🇮🇶", href: "scholarship-study-in-iraq.html" },
+            { title_ar: "منح التبادل الثقافي", title_en: "Cultural Exchange Grants", title_zh: "文化交流补助金", title_ru: "Гранты на культурный обмен", country_ar: "متعدد", country_en: "Various", country_zh: "多国", country_ru: "Разные", description_ar: "برامج تبادل ثقافي وأكاديمي مع جامعات شريكة.", description_en: "Cultural and academic exchange with partner universities.", description_zh: "与合作大学的文化和学术交流。", description_ru: "Культурный и академический обмен с партнерскими университетами.", flag: "🌍", href: "scholarship-cultural-exchange.html" },
+            { title_ar: "ملخص منح الجامعات", title_en: "Universities Scholarships Summary", title_zh: "大学奖学金摘要", title_ru: "Обзор университетских стипендий", country_ar: "ملخص", country_en: "Summary", country_zh: "摘要", country_ru: "Обзор", description_ar: "نظرة عامة على العديد من المنح الجامعية المتاحة.", description_en: "An overview of various available university scholarships.", description_zh: "各种可用大学奖学金的概述。", description_ru: "Обзор различных доступных университетских стипендий.", flag: "🎓", href: "scholarships-universities-summary.html" }
+        ];
+
+        const newsData = [
+            {"title_ar":"انطلاق العام الدراسي الجديد","title_en":"New Academic Year Begins","title_zh":"新学年开始","title_ru":"Начинается новый учебный год","date":"2025-08-01","category_ar":"أكاديمي","category_en":"Academic","category_zh":"学术","category_ru":"Академический","color":"blue","href":"#"},
+            {"title_ar":"مدرسة النور تدشن حفل ختامي","title_en":"Al-Noor School Launches Closing Ceremony","title_zh":"阿尔努尔学校举办公布闭幕式","title_ru":"Школа Ан-Нур проводит заключительную церемонию","date":"2024-05-20","category_ar":"أنشطة","category_en":"Activities","category_zh":"活动","category_ru":"Мероприятия","color":"green","href":"Schools-active/Alnoor/Alnoor-activity1.mp4"},
+            {"title_ar":"التقديم على منح الصين","title_en":"Apply for China Scholarships","title_zh":"申请中国奖学金","title_ru":"Подача заявок на стипендии в Китае","date":"2025-09-10","category_ar":"إعلانات","category_en":"Announcements","category_zh":"公告","category_ru":"Объявления","color":"yellow","href":"#scholarships"}
+        ];
+
+        let currentLang = 'ar';
+        const langData = { ar: { flag: '🇾🇪', name: 'العربية' }, en: { flag: '🇬🇧', name: 'English' }, zh: { flag: '🇨🇳', name: '中文' }, ru: { flag: '🇷🇺', name: 'Русский' } };
+        const htmlEl = document.documentElement;
+        
+        function changeLanguage(lang) {
+            currentLang = lang;
+            updateLanguage();
+            document.getElementById('lang-switcher-menu').classList.add('hidden');
+        }
+
+        function updateLanguage() {
+            const elementsToTranslate = document.querySelectorAll('[data-ar]');
+            htmlEl.lang = currentLang;
+            htmlEl.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+            document.getElementById('current-lang-flag').textContent = langData[currentLang].flag;
+            document.getElementById('current-lang-name').textContent = langData[currentLang].name;
+            elementsToTranslate.forEach(el => { if(el.dataset[currentLang]) el.textContent = el.dataset[currentLang]; });
+            renderSchools(); renderScholarships(); renderNews();
+        }
+
+        function renderSchools() {
+            const container = document.getElementById('schools-grid');
+            const themeClasses = {
+                blue: { button: 'bg-blue-600 hover:bg-blue-700' },
+                green: { button: 'bg-green-600 hover:bg-green-700' },
+                yellow: { button: 'bg-yellow-500 hover:bg-yellow-600' }
+            };
+            container.innerHTML = schoolsData.map(school => {
+                const theme = themeClasses[school.theme];
+                return `<div class="bg-white rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 flex flex-col p-6 items-center text-center">
+                    <img src="${school.image}" alt="${school['name_' + currentLang]}" class="w-24 h-24 rounded-full object-cover mb-4 shadow-md border-4 border-white">
+                    <div class="flex flex-col flex-grow">
+                        <h3 class="text-xl font-bold mb-2">${school['name_' + currentLang]}</h3>
+                        <p class="text-gray-500 mb-4">${{ar:'المدير',en:'Director',zh:'校长',ru:'Директор'}[currentLang]}: ${school['director_' + currentLang]}</p>
+                        <a href="${school.link}" class="mt-auto block text-center ${theme.button} text-white font-semibold py-2 px-4 rounded-lg transition duration-300">${{ar:'الاطلاع على المدرسة',en:'View School',zh:'查看学校',ru:'Посмотреть школу'}[currentLang]}</a>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function renderScholarships() { const container = document.getElementById('scholarship-container'); container.innerHTML = scholarshipsData.map(s => `<div class="scholarship-card bg-white rounded-xl shadow-lg p-6 w-80 flex-shrink-0 snap-start"><div class="flex items-center gap-4 mb-4"><span class="text-4xl">${s.flag}</span><div><h3 class="font-bold text-lg">${s['title_' + currentLang]}</h3><p class="text-gray-500 text-sm">${s['country_' + currentLang] || ''}</p></div></div><p class="text-gray-600 mb-5">${s['description_' + currentLang]}</p><a href="${s.href}" class="block text-center bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 transition">${{ar: 'التفاصيل', en: 'Details', zh: '详情', ru: 'Подробнее'}[currentLang]}</a></div>`).join(''); }
+        function renderNews() { const grid = document.getElementById('news-grid'); const colors = {blue:{bg:'bg-blue-100',text:'text-blue-800'},green:{bg:'bg-green-100',text:'text-green-800'},yellow:{bg:'bg-yellow-100',text:'text-yellow-800'}}; grid.innerHTML = newsData.sort((a,b) => new Date(b.date) - new Date(a.date)).map(item => { const c = colors[item.color] || colors.blue; return `<a href="${item.href}" class="block bg-gray-50 rounded-xl p-6 border border-gray-200 hover:border-blue-300 transition hover:shadow-md"><div class="flex justify-between items-start mb-3"><span class="text-xs font-bold uppercase px-3 py-1 rounded-full ${c.bg} ${c.text}">${item['category_' + currentLang]}</span><span class="text-sm text-gray-500">${item.date}</span></div><h3 class="font-bold text-xl">${item['title_' + currentLang]}</h3></a>`}).join('');}
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('current-year').textContent = new Date().getFullYear();
+            
+            const mainNav = document.querySelector('header ul');
+            const mobileMenuContainer = document.getElementById('mobile-menu');
+            let mobileNavHTML = `<ul class="flex flex-col p-4 space-y-2">${mainNav.innerHTML}</ul>`;
+            mobileNavHTML += `<div class="p-4 mt-2 border-t space-y-3"><a href="student-login.html" class="block text-center bg-blue-600 text-white px-5 py-2 rounded-full hover:bg-blue-700 transition" data-ar="بوابة الطالب" data-en="Student Portal" data-zh="学生门户" data-ru="Портал студента">بوابة الطالب</a><a href="teacher-login.html" class="block text-center bg-gray-700 text-white px-5 py-2 rounded-full hover:bg-gray-800 transition" data-ar="بوابة المعلم" data-en="Teacher Portal" data-zh="教师门户" data-ru="Портал преподавателя">بوابة المعلم</a></div>`;
+            mobileMenuContainer.innerHTML = mobileNavHTML;
+            
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            mobileMenuContainer.querySelectorAll('a').forEach(link => link.addEventListener('click', () => { mobileMenuButton.click() }));
+            mobileMenuButton.addEventListener('click', () => { mobileMenuContainer.classList.toggle('-translate-x-full'); mobileMenuContainer.classList.toggle('rtl:translate-x-full'); });
+            
+            const langButton = document.getElementById('lang-switcher-button');
+            const langMenu = document.getElementById('lang-switcher-menu');
+            langButton.addEventListener('click', (e) => { e.stopPropagation(); langMenu.classList.toggle('hidden'); });
+            document.addEventListener('click', () => langMenu.classList.add('hidden'));
+
+            const container = document.getElementById('scholarship-container');
+            const scrollLeftBtn = document.getElementById('scroll-left');
+            const scrollRightBtn = document.getElementById('scroll-right');
+            scrollLeftBtn.addEventListener('click', () => container.scrollBy({ left: -350, behavior: 'smooth' }));
+            scrollRightBtn.addEventListener('click', () => container.scrollBy({ left: 350, behavior: 'smooth' }));
+            
+            updateLanguage();
+        });
+    </script>
+</body>
+</html>

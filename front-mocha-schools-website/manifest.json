@@ -1,0 +1,12 @@
+{
+  "name": "Mocha Schools",
+  "short_name": "Mocha",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "theme_color": "#2563eb",
+  "background_color": "#ffffff",
+  "icons": []
+}

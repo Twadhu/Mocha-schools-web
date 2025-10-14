@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-ar="مدرسة النور بالثوباني | Mocha Schools" data-en="Al-Noor School, Thobani | Mocha Schools" data-zh="阿尔努尔学校 | 摩卡学校" data-ru="Школа Ан-Нур, Тубани | Школы Мокки">مدرسة النور بالثوباني | Mocha Schools</title>
+
+    <!-- SEO & Metadata -->
+    <meta name="description" content="الموقع الرسمي لمدرسة النور بالثوباني، استعرض الأنشطة، الكادر التعليمي، وتاريخ المدرسة.">
+    <meta name="theme-color" content="#f59e0b">
+    <link rel="icon" href="S1photo.png" type="image/png">
+    <link rel="apple-touch-icon" href="S1photo.png">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Poppins:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <!-- Custom Styles -->
+    <style>
+        :root {
+            --font-ar: 'Tajawal', sans-serif;
+            --font-en: 'Poppins', sans-serif;
+            --font-zh: 'Noto Sans SC', sans-serif;
+            --font-ru: 'Roboto', sans-serif;
+        }
+        html[lang="ar"] body { font-family: var(--font-ar); }
+        html[lang="en"] body { font-family: var(--font-en); }
+        html[lang="zh"] body { font-family: var(--font-zh); }
+        html[lang="ru"] body { font-family: var(--font-ru); }
+
+        body { background-color: #fffbeb; }
+        html { scroll-behavior: smooth; }
+        .mobile-menu { transition: transform 0.3s ease-in-out; }
+
+        @keyframes scroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        .marquee-content {
+            display: flex;
+            width: 200%;
+            animation: scroll 60s linear infinite;
+        }
+        .marquee-content:hover { animation-play-state: paused; }
+        .marquee-item {
+            flex-shrink: 0;
+            width: auto;
+            height: 250px;
+            margin: 0 10px;
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .marquee-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <!-- Top Banner -->
+    <div class="bg-blue-800 text-white text-center p-2 text-sm font-semibold">
+        <p data-ar="لا تنسوا إخوانكم في غزة من الدعاء" data-en="Do not forget your brothers and sisters in Gaza in your prayers" data-zh="请不要在祈祷中忘记你们在加沙的兄弟姐妹" data-ru="Не забывайте своих братьев и сестер в Газе в своих молитвах">لا تنسوا إخوانكم في غزة من الدعاء</p>
+    </div>
+
+    <!-- Header -->
+    <header class="bg-white/80 backdrop-blur-lg shadow-sm sticky top-0 z-50">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="#home" class="flex items-center gap-3">
+                <img src="S1photo.png" alt="School Logo" class="w-10 h-10 rounded-full object-cover">
+                <h1 class="text-xl font-bold text-gray-800" data-ar="مدرسة النور" data-en="Al-Noor School" data-zh="阿尔努尔学校" data-ru="Школа Ан-Нур">مدرسة النور</h1>
+            </a>
+            <div class="flex items-center gap-4">
+                <ul class="hidden md:flex items-center space-x-6 rtl:space-x-reverse">
+                    <li><a href="#home" class="text-gray-600 hover:text-yellow-600 transition" data-ar="الرئيسية" data-en="Home" data-zh="主页" data-ru="Главная">الرئيسية</a></li>
+                    <li><a href="#about" class="text-gray-600 hover:text-yellow-600 transition" data-ar="عن المدرسة" data-en="About" data-zh="关于" data-ru="О нас">عن المدرسة</a></li>
+                    <li><a href="#staff" class="text-gray-600 hover:text-yellow-600 transition" data-ar="الكادر التعليمي" data-en="Staff" data-zh="教职员工" data-ru="Коллектив">الكادر التعليمي</a></li>
+                    <li><a href="#activities" class="text-gray-600 hover:text-yellow-600 transition" data-ar="الأنشطة" data-en="Activities" data-zh="活动" data-ru="Мероприятия">الأنشطة</a></li>
+                    <li><a href="#gallery" class="text-gray-600 hover:text-yellow-600 transition" data-ar="معرض الصور" data-en="Gallery" data-zh="相册" data-ru="Галерея">معرض الصور</a></li>
+                </ul>
+                <!-- Language Switcher -->
+                <div class="relative">
+                    <button id="lang-switcher-button" class="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 p-2 rounded-full">
+                        <span id="current-lang-flag"></span>
+                        <span id="current-lang-name" class="hidden md:block font-semibold text-sm"></span>
+                    </button>
+                    <div id="lang-switcher-menu" class="hidden absolute top-full mt-2 right-0 bg-white rounded-lg shadow-xl border w-40">
+                        <a href="#" onclick="changeLanguage('ar')" class="flex items-center gap-2 p-2 hover:bg-gray-100"><span>🇾🇪</span> العربية</a>
+                        <a href="#" onclick="changeLanguage('en')" class="flex items-center gap-2 p-2 hover:bg-gray-100"><span>🇬🇧</span> English</a>
+                        <a href="#" onclick="changeLanguage('zh')" class="flex items-center gap-2 p-2 hover:bg-gray-100"><span>🇨🇳</span> 中文</a>
+                        <a href="#" onclick="changeLanguage('ru')" class="flex items-center gap-2 p-2 hover:bg-gray-100"><span>🇷🇺</span> Русский</a>
+                    </div>
+                </div>
+                <a href="../../mocha-schools.html" class="text-yellow-600 hover:text-yellow-700 font-semibold" data-ar="→ العودة" data-en="→ Go Back" data-zh="→ 返回" data-ru="→ Назад">→ العودة</a>
+                <button id="mobile-menu-button" class="md:hidden text-gray-700">
+                    <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" /></svg>
+                </button>
+            </div>
+        </nav>
+        <div id="mobile-menu" class="mobile-menu absolute top-full left-0 w-full bg-white shadow-lg md:hidden -translate-x-full rtl:translate-x-full">
+            <!-- Mobile nav links will be injected by JS -->
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section id="home" class="relative text-white overflow-hidden bg-gray-800">
+             <div class="absolute inset-0"><img src="S1photo.png" alt="School Front" class="w-full h-full object-cover opacity-30"></div>
+            <div class="relative container mx-auto px-6 py-24 md:py-32 text-center">
+                 <h2 class="text-4xl md:text-6xl font-extrabold" data-ar="مدرسة النور بالثوباني" data-en="Al-Noor School, Thobani" data-zh="阿尔努尔学校" data-ru="Школа Ан-Нур, Тубани">مدرسة النور بالثوباني</h2>
+                 <p class="mt-4 text-lg md:text-xl text-yellow-300" data-ar="منارة العلم والمعرفة في مديرية المخا" data-en="A Beacon of Science and Knowledge in the Mocha District" data-zh="摩卡区的科学与知识灯塔" data-ru="Маяк науки и знаний в районе Мокка">منارة العلم والمعرفة في مديرية المخا</p>
+            </div>
+        </section>
+        
+        <!-- About Section -->
+        <section id="about" class="py-20">
+            <div class="container mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
+                <div class="text-center md:text-start">
+                    <h2 class="text-3xl md:text-4xl font-bold mb-4" data-ar="تاريخنا وموقعنا" data-en="Our History & Location" data-zh="我们的历史与位置" data-ru="Наша история и местоположение">تاريخنا وموقعنا</h2>
+                    <p class="text-gray-600 text-lg leading-relaxed" data-ar="تأسست مدرسة النور بالثوباني في عام 1978، ومنذ ذلك الحين وهي منارة للعلم والمعرفة في مديرية المخا، تضيء دروب المستقبل لأجيال متعاقبة. (سيتم إضافة المزيد من التفاصيل لاحقًا)." data-en="Al-Noor School in Thobani was founded in 1978. Since then, it has been a beacon of science and knowledge in the Mocha District, illuminating the future for successive generations. (More details will be added later)." data-zh="阿尔努尔学校成立于1978年。从那时起，它一直是摩卡区的科学与知识灯塔，为一代又一代的学生照亮未来。(更多细节将稍后添加)" data-ru="Школа Ан-Нур в Тубани была основана в 1978 году. С тех пор она является маяком науки и знаний в районе Мокка, освещая будущее для последующих поколений. (Более подробная информация будет добавлена позже).">تأسست مدرسة النور بالثوباني في عام 1978...</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-lg border border-yellow-200">
+                     <h3 class="font-bold text-xl mb-3" data-ar="موقعنا" data-en="Our Location" data-zh="位置" data-ru="Наше местоположение">موقعنا</h3>
+                     <p class="text-gray-700" data-ar="تقع المدرسة في قرية الثوباني، عزلة المشالحة، مديرية المخا، محافظة تعز، الجمهورية اليمنية." data-en="The school is located in the village of Al-Thobani, Mashaleha sub-district, Mocha District, Taiz Governorate, Republic of Yemen." data-zh="学校位于也门共和国塔伊兹省摩卡区马沙勒哈街道的阿尔图巴尼村。" data-ru="Школа расположена в деревне Ат-Тубани, субрайон Машалеха, район Мокка, мухафаза Таиз, Йеменская Республика.">تقع المدرسة في قرية الثوباني...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Staff Section -->
+        <section id="staff" class="py-20 bg-white">
+            <div class="container mx-auto px-6 text-center">
+                <h2 class="text-3xl md:text-4xl font-bold mb-3" data-ar="كادرنا التعليمي والإداري" data-en="Our Teaching & Administrative Staff" data-zh="我们的教学及行政人员" data-ru="Наш преподавательский и административный состав">كادرنا التعليمي والإداري</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto" data-ar="تعرف على فريق عملنا المتميز الذي يسعى لبناء جيل واعد." data-en="Meet our outstanding team that strives to build a promising generation." data-zh="认识我们杰出的团队，他们致力于培养有前途的一代。" data-ru="Познакомьтесь с нашей выдающейся командой, которая стремится воспитать многообещающее поколение.">تعرف على فريق عملنا...</p>
+                <a href="school-staff.html" class="mt-6 inline-block bg-yellow-500 text-white font-bold py-3 px-8 rounded-full hover:bg-yellow-600 transition duration-300" data-ar="عرض جميع الموظفين" data-en="View All Staff" data-zh="查看所有员工" data-ru="Посмотреть всех сотрудников">عرض جميع الموظفين</a>
+            </div>
+        </section>
+
+        <!-- Activities Section & Gallery are the same as before -->
+        <section id="activities" class="py-20">
+            <div class="container mx-auto px-6">
+                 <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold mb-3" data-ar="الأنشطة والفعاليات" data-en="Activities & Events" data-zh="活动与事件" data-ru="Мероприятия и события">الأنشطة والفعاليات</h2>
+                    <p class="text-gray-600 max-w-2xl mx-auto" data-ar="نؤمن بأهمية الأنشطة اللاصفية في صقل مواهب طلابنا." data-en="We believe in the importance of extracurricular activities in honing our students' talents." data-zh="我们相信课外活动在培养学生才能方面的重要性。" data-ru="Мы верим в важность внеклассных мероприятий для развития талантов наших учеников.">نؤمن بأهمية الأنشطة...</p>
+                </div>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden"><div class="w-full aspect-video bg-black"><video controls class="w-full h-full" poster="https://placehold.co/1280x720/000/fff?text=Video+1"><source src="Alnoor-activity1.mp4" type="video/mp4"></video></div><div class="p-6"><h3 class="font-bold text-xl" data-ar="دوري طوفان الأقصى الرياضي" data-en="Al-Aqsa Flood Sports League" data-zh="阿克萨洪水体育联赛" data-ru="Спортивная лига Потоп Аль-Аксы">دوري طوفان الأقصى الرياضي</h3></div></div>
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden"><div class="w-full aspect-video bg-black"><video controls class="w-full h-full" poster="https://placehold.co/1280x720/000/fff?text=Video+2"><source src="Alnoor-activity2.mp4" type="video/mp4"></video></div><div class="p-6"><h3 class="font-bold text-xl" data-ar="فعالية التضامن مع غزة" data-en="Solidarity with Gaza Event" data-zh="声援加沙活动" data-ru="Акция солидарности с Газой">فعالية التضامن مع غزة</h3></div></div>
+                </div>
+            </div>
+        </section>
+        <section id="gallery" class="py-20 bg-white overflow-hidden">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold mb-3" data-ar="ألبوم الذكريات" data-en="Album of Memories" data-zh="回忆相册" data-ru="Альбом воспоминаний">ألبوم الذكريات</h2>
+                    <p class="text-gray-600 max-w-2xl mx-auto" data-ar="لقطات خالدة من مسيرتنا التعليمية." data-en="Timeless snapshots from our educational journey." data-zh="我们教育历程中的永恒瞬间。" data-ru="Незабываемые моменты нашего образовательного пути.">لقطات خالدة...</p>
+                </div>
+            </div>
+            <div class="marquee"><div id="marquee-content" class="marquee-content"></div></div>
+        </section>
+    </main>
+
+    <!-- Footer (synchronized with staff page) -->
+    <footer class="bg-gray-800 text-white mt-16">
+        <div class="container mx-auto px-6 py-10">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                <div class="col-span-2 md:col-span-1"><h3 class="font-bold text-lg mb-2" data-ar="مدرسة النور بالثوباني" data-en="Al-Noor School, Thobani" data-zh="阿尔努尔学校" data-ru="Школа Ан-Нур, Тубани">مدرسة النور بالثوباني</h3><p class="text-gray-400 text-sm" data-ar="جزء من مبادرة مدارس المخا التعليمية." data-en="Part of the Mocha Schools educational initiative." data-zh="摩卡学校教育倡议的一部分。" data-ru="Часть образовательной инициативы Школы Мокки.">جزء من مبادرة...</p></div>
+                <div><h4 class="font-semibold mb-3" data-ar="روابط سريعة" data-en="Quick Links" data-zh="快速链接" data-ru="Быстрые ссылки">روابط سريعة</h4><ul class="space-y-2"><li><a href="school-activities-alnoor.html" class="text-gray-400 hover:text-white text-sm" data-ar="عن المدرسة" data-en="About" data-zh="关于" data-ru="О нас">عن المدرسة</a></li><li><a href="school-staff.html" class="text-gray-400 hover:text-white text-sm" data-ar="هيكل المدرسة" data-en="School Staff" data-zh="学校员工" data-ru="Коллектив школы">هيكل المدرسة</a></li></ul></div>
+                <div><h4 class="font-semibold mb-3" data-ar="مواقع صديقة" data-en="Related Sites" data-zh="相关网站" data-ru="Связанные сайты">مواقع صديقة</h4><ul class="space-y-2"><li><a href="../../mocha-schools.html" class="text-gray-400 hover:text-white text-sm" data-ar="بوابة مدارس المخا" data-en="Mocha Schools Portal" data-zh="摩卡学校门户" data-ru="Портал Школы Мокки">بوابة مدارس المخا</a></li></ul></div>
+                 <div><h4 class="font-semibold mb-3" data-ar="المطور" data-en="Developer" data-zh="开发者" data-ru="Разработчик">المطور</h4><p class="text-gray-400 text-sm">Abdullah Faisal Abbas</p></div>
+            </div>
+            <div class="mt-8 border-t border-gray-700 pt-6 text-center text-gray-500 text-sm"><p>&copy; <span id="current-year"></span> Mocha Schools. All rights reserved.</p></div>
+        </div>
+    </footer>
+
+    <script>
+        // --- DATA ---
+        const galleryImages = [
+            { img: 'https://placehold.co/600x400/334155/FFFFFF?text=Classroom', alt_ar: 'فصل دراسي', alt_en: 'Classroom', alt_zh: '教室', alt_ru: 'Классная комната' },
+            { img: 'https://placehold.co/600x400/1e40af/FFFFFF?text=Library', alt_ar: 'مكتبة المدرسة', alt_en: 'School Library', alt_zh: '学校图书馆', alt_ru: 'Школьная библиотека' },
+            { img: 'https://placehold.co/600x400/166534/FFFFFF?text=Playground', alt_ar: 'ساحة اللعب', alt_en: 'Playground', alt_zh: '操场', alt_ru: 'Игровая площадка' },
+            { img: 'https://placehold.co/600x400/854d0e/FFFFFF?text=Students', alt_ar: 'طلاب المدرسة', alt_en: 'School Students', alt_zh: '学生', alt_ru: 'Школьники' },
+            { img: 'https://placehold.co/600x400/991b1b/FFFFFF?text=Event', alt_ar: 'فعالية مدرسية', alt_en: 'School Event', alt_zh: '学校活动', alt_ru: 'Школьное мероприятие' },
+            { img: 'https://placehold.co/600x400/581c87/FFFFFF?text=Science+Lab', alt_ar: 'مختبر العلوم', alt_en: 'Science Lab', alt_zh: '科学实验室', alt_ru: 'Научная лаборатория' }
+        ];
+
+        // --- LANGUAGE & DYNAMIC CONTENT ---
+        let currentLang = 'ar';
+        const langData = {
+            ar: { flag: '🇾🇪', name: 'العربية' },
+            en: { flag: '🇬🇧', name: 'English' },
+            zh: { flag: '🇨🇳', name: '中文' },
+            ru: { flag: '🇷🇺', name: 'Русский' }
+        };
+        
+        const htmlEl = document.documentElement;
+        const elementsToTranslate = document.querySelectorAll('[data-ar]');
+
+        function changeLanguage(lang) {
+            currentLang = lang;
+            updateLanguage();
+            document.getElementById('lang-switcher-menu').classList.add('hidden');
+        }
+
+        function updateLanguage() {
+            htmlEl.lang = currentLang;
+            htmlEl.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+
+            document.getElementById('current-lang-flag').textContent = langData[currentLang].flag;
+            document.getElementById('current-lang-name').textContent = langData[currentLang].name;
+            
+            elementsToTranslate.forEach(el => {
+                if(el.dataset[currentLang]) el.textContent = el.dataset[currentLang];
+            });
+            renderGallery();
+        }
+        
+        // --- GALLERY ---
+        function renderGallery() {
+            const marqueeContent = document.getElementById('marquee-content');
+            const imagesHtml = galleryImages.map(item => `
+                <div class="marquee-item">
+                    <img src="${item.img}" alt="${item['alt_' + currentLang]}" loading="lazy">
+                </div>
+            `).join('');
+            marqueeContent.innerHTML = imagesHtml + imagesHtml;
+        }
+        
+        // --- INITIALIZATION ---
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('current-year').textContent = new Date().getFullYear();
+            
+            const mainNav = document.querySelector('header ul');
+            const mobileMenuContainer = document.getElementById('mobile-menu');
+            mobileMenuContainer.innerHTML = `<ul class="flex flex-col p-4 space-y-2">${mainNav.innerHTML}</ul>`;
+
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            mobileMenuContainer.querySelectorAll('a').forEach(link => link.addEventListener('click', () => mobileMenuButton.click()));
+            mobileMenuButton.addEventListener('click', () => {
+                 mobileMenuContainer.classList.toggle('-translate-x-full');
+                 mobileMenuContainer.classList.toggle('rtl:translate-x-full');
+            });
+
+            const langButton = document.getElementById('lang-switcher-button');
+            const langMenu = document.getElementById('lang-switcher-menu');
+            langButton.addEventListener('click', (e) => {
+                e.stopPropagation();
+                langMenu.classList.toggle('hidden');
+            });
+            document.addEventListener('click', () => langMenu.classList.add('hidden'));
+
+            updateLanguage();
+        });
+    </script>
+</body>
+</html>
+

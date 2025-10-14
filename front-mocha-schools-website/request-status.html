@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>حالة طلب الحساب</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+<style>
+:root {--primary:#2563eb;--primary-dark:#1d4ed8;--bg:#f1f5f9;--card:#fff;--border:#e2e8f0;--danger:#dc2626;--warn:#f59e0b;--ok:#16a34a;--text:#1f2937}
+body{margin:0;font-family:Tajawal,system-ui,-apple-system,'Segoe UI',Roboto;background:var(--bg);color:var(--text);} 
+.container{max-width:780px;margin:40px auto;padding:0 16px;}
+header{display:flex;align-items:center;gap:16px;margin-bottom:24px;flex-wrap:wrap;}
+h1{margin:0;font-size:26px;font-weight:800;color:var(--primary);} 
+.table-wrap{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:20px 20px 8px;box-shadow:0 6px 26px rgba(0,0,0,.06);} 
+table{width:100%;border-collapse:collapse;}
+th,td{padding:10px 12px;font-size:14px;border-bottom:1px solid var(--border);text-align:right;}
+th{background:#fff;font-weight:700;color:#334155;} 
+.badge{display:inline-block;padding:4px 10px;border-radius:30px;font-size:12px;font-weight:600;letter-spacing:.5px;} 
+.badge.pending{background:#fef3c7;color:#92400e;} 
+.badge.approved{background:#dcfce7;color:#166534;} 
+.badge.rejected{background:#fee2e2;color:#991b1b;} 
+.actions{display:flex;gap:6px;} 
+.btn{padding:8px 14px;font-size:13px;border:none;border-radius:10px;cursor:pointer;font-weight:600;display:inline-flex;align-items:center;gap:6px;} 
+.btn-refresh{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;} 
+.btn-clear{background:#fff;border:2px solid var(--danger);color:var(--danger);} 
+.empty{text-align:center;color:#64748b;padding:26px 0;font-size:14px;} 
+footer{text-align:center;margin:40px 0 20px;font-size:12px;color:#64748b;} 
+a.home{color:var(--primary);text-decoration:none;font-weight:600;font-size:14px;} 
+.filter{margin-right:auto;display:flex;gap:8px;flex-wrap:wrap;} 
+.filter input{padding:10px 12px;border:2px solid var(--border);border-radius:10px;font-size:14px;} 
+.filter input:focus{outline:none;border-color:var(--primary);} 
+</style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>حالة طلب الحساب</h1>
+      <div class="filter">
+        <input id="search" placeholder="بحث بالبريد أو الدور" oninput="render()">
+      </div>
+      <div class="actions">
+        <button class="btn btn-refresh" onclick="refresh()"><i class="fas fa-rotate"></i>تحديث</button>
+        <button class="btn btn-clear" onclick="clearLocal()"><i class="fas fa-trash"></i>مسح محلي</button>
+      </div>
+      <a href="mocha-schools.html" class="home"><i class="fas fa-arrow-right"></i> الرئيسية</a>
+    </header>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>البريد</th><th>الدور</th><th>المدرسة</th><th>الصف</th><th>الحالة</th><th>التاريخ</th></tr></thead>
+        <tbody id="rows"><tr><td colspan="6" class="empty">لا بيانات</td></tr></tbody>
+      </table>
+    </div>
+    <footer>بيانات محلية مؤقتة حتى الربط مع لوحة الإدارة.</footer>
+  </div>
+<script>
+function load(){ try{return JSON.parse(localStorage.getItem('accountRequests')||'[]');}catch{return[];} }
+function formatDate(ts){ const d=new Date(ts); return d.toLocaleString('ar'); }
+function render(){ const q=(search.value||'').toLowerCase(); const data=load().filter(r=> !q || r.email.toLowerCase().includes(q)|| r.role.includes(q)); const tb=document.getElementById('rows'); if(!data.length){ tb.innerHTML='<tr><td colspan="6" class="empty">لا بيانات</td></tr>'; return;} tb.innerHTML=data.sort((a,b)=>b.ts-a.ts).map(r=>`<tr><td>${r.email}</td><td>${r.role==='student'?'طالب':'معلم'}</td><td>${r.school_id||''}</td><td>${r.grade_level||''}</td><td><span class='badge ${r.status}'>${r.status==='pending'?'قيد المراجعة':(r.status==='approved'?'مقبول':'مرفوض')}</span></td><td>${formatDate(r.ts)}</td></tr>`).join(''); }
+function refresh(){ render(); }
+function clearLocal(){ if(confirm('مسح السجلات المحلية؟')){ localStorage.removeItem('accountRequests'); render(); } }
+render();
+</script>
+</body>
+</html>

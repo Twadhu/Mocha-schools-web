@@ -1,0 +1,20 @@
+/* Site-wide base styles */
+:root{ --primary:#2563eb; --primary-2:#0ea5e9; --primary-dark:#1d4ed8; --border:#e5e7eb; --text:#0f172a; }
+html,body{ margin:0; padding:0; }
+.btn{ display:inline-flex; align-items:center; gap:8px; padding:10px 14px; border-radius:10px; border:1px solid var(--border); background:#fff; color:var(--text); font-weight:700; cursor:pointer; transition:.2s; text-decoration:none; }
+.btn:hover{ background:#f8fafc; }
+.btn-primary{ background:linear-gradient(90deg,var(--primary),var(--primary-2)); color:#fff; border-color:transparent; }
+.btn-primary:hover{ filter:brightness(1.05); }
+.btn-outline{ background:#fff; color:var(--text); border-color:var(--border); }
+.btn-danger{ background:#fee2e2; color:#991b1b; border-color:#fecaca; }
+.actions{ display:flex; gap:8px; flex-wrap:wrap; }
+.card{ border:1px solid var(--border); border-radius:12px; background:#fff; padding:16px; box-shadow:0 1px 3px rgba(0,0,0,.05); }
+/* Utilities */
+.hidden{ display:none !important; }
+.icon-xl{ font-size:48px; margin-bottom:20px; }
+.w-100{ width:100%; }
+/* Inline style replacements */
+.noscript-banner{display:block;padding:12px 16px;background:#fee2e2;color:#991b1b;font-family:Tajawal,system-ui;font-size:14px;text-align:center;}
+.notify-bar{position:fixed;top:0;right:220px;left:0;height:48px;background:linear-gradient(90deg,#2563eb,#1d4ed8);color:#fff;display:flex;align-items:center;z-index:1100;padding:0 14px;box-shadow:0 2px 6px rgba(0,0,0,.18);font-family:Tajawal,system-ui;font-size:15px;}
+.notify-close{margin-right:auto;background:none;border:none;color:#fff;font-size:22px;cursor:pointer;}
+.link-underline-white{color:#fff;text-decoration:underline;font-size:15px;}

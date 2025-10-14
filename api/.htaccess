@@ -1,0 +1,17 @@
+## Development helpers (safe for local only)
+# Enable a development flag that our PHP checks (only effective on localhost requests)
+SetEnv DEV_ALLOW_SCHOOL_PANEL 1
+# Allow PATH_INFO so scripts like account-requests.php/123/decision can work (optional)
+AcceptPathInfo On
+
+# Optional pretty URL rewrites for API
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteBase /
+# Allow direct file access first
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+# Map /api/account-requests and subpaths to account-requests.php
+RewriteRule ^api/account-requests(?:/(.*))?$ /api/account-requests.php/$1 [L,QSA]
+</IfModule>

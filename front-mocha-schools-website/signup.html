@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <link rel="stylesheet" href="css/site.css">
+  <meta charset="UTF-8">
+  <title data-ar="إنشاء حساب" data-en="Sign Up">إنشاء حساب</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --success: #16a34a;
+      --warning: #f59e0b;
+      --danger: #dc2626;
+      --text: #1f2937;
+      --text-light: #6b7280;
+      --bg: #ffffff;
+      --bg-light: #f9fafb;
+      --border: #e5e7eb;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body { 
+      font-family: Tajawal, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; 
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+      overflow: hidden;
+      width: 100%;
+      max-width: 600px;
+    }
+
+    .header {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: white;
+      padding: 30px;
+      text-align: center;
+    }
+
+    .header h1 {
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+
+    .header p {
+      opacity: 0.9;
+      font-size: 16px;
+    }
+
+    .form-container {
+      padding: 40px;
+    }
+
+    .form-section {
+      margin-bottom: 30px;
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 768px) {
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-group label {
+      font-weight: 600;
+      font-size: 14px;
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+
+    .form-group input,
+    .form-group select {
+      padding: 12px 16px;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      font-size: 16px;
+      transition: all 0.3s;
+      background: white;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    .radio-group {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .radio-option {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .radio-option:hover {
+      border-color: var(--primary);
+    }
+
+    .radio-option input[type="radio"] {
+      margin: 0;
+    }
+
+    .radio-option input[type="radio"]:checked + span {
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    .radio-option:has(input[type="radio"]:checked) {
+      border-color: var(--primary);
+      background: rgba(37, 99, 235, 0.05);
+    }
+
+  /* use shared .btn styles from site.css */
+
+    .msg {
+      padding: 12px 16px;
+      border-radius: 10px;
+      margin-top: 20px;
+      font-weight: 600;
+      display: none;
+    }
+
+    .msg.error {
+      background: #fee2e2;
+      color: #991b1b;
+      border: 1px solid #fecaca;
+    }
+
+    .msg.ok {
+      background: #dcfce7;
+      color: #166534;
+      border: 1px solid #bbf7d0;
+    }
+
+    .login-link {
+      text-align: center;
+      margin-top: 20px;
+      color: var(--text-light);
+    }
+
+    .login-link a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .login-link a:hover {
+      text-decoration: underline;
+    }
+
+    .lang-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: white;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 16px;
+      cursor: pointer;
+      font-weight: 600;
+      z-index: 1001;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .back-link {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background: white;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 16px;
+      cursor: pointer;
+      font-weight: 600;
+      z-index: 1001;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      text-decoration: none;
+      color: var(--text);
+    }
+
+    .back-link:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .school-info {
+      background: var(--bg-light);
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-left: 4px solid var(--primary);
+    }
+
+    .school-info h3 {
+      color: var(--primary);
+      margin-bottom: 10px;
+    }
+
+    .school-info p {
+      color: var(--text-light);
+      font-size: 14px;
+      margin-bottom: 5px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Language Toggle -->
+  <div class="lang-toggle" onclick="toggleLanguage()">
+    <i class="fas fa-globe"></i>
+    <span id="lang-text">EN</span>
+  </div>
+
+  <!-- Back Link -->
+  <a href="/" class="back-link">
+    <i class="fas fa-arrow-left"></i>
+    <span data-ar="العودة للرئيسية" data-en="Back to Home">العودة للرئيسية</span>
+  </a>
+
+  <div class="container">
+    <div class="header">
+      <i class="fas fa-graduation-cap icon-xl"></i>
+      <h1 data-ar="إنشاء حساب جديد" data-en="Create New Account">إنشاء حساب جديد</h1>
+      <p data-ar="انضم إلى منصة مدارس المخا التعليمية" data-en="Join Al-Mukha Schools Educational Platform">انضم إلى منصة مدارس المخا التعليمية</p>
+    </div>
+
+    <div class="form-container">
+    <form id="signupForm" novalidate>
+        <!-- Personal Information -->
+        <div class="form-section">
+          <div class="section-title">
+            <i class="fas fa-user"></i>
+            <span data-ar="المعلومات الشخصية" data-en="Personal Information">المعلومات الشخصية</span>
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="User_first_name" data-ar="الاسم الأول" data-en="First Name">الاسم الأول</label>
+              <input type="text" id="User_first_name" name="User_first_name" required minlength="2" placeholder="عبدالله">
+            </div>
+            <div class="form-group">
+              <label for="User_last_name" data-ar="الاسم الأخير" data-en="Last Name">الاسم الأخير</label>
+              <input type="text" id="User_last_name" name="User_last_name" required minlength="2" placeholder="عباس">
+      </div>
+      </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="User_email" data-ar="البريد الإلكتروني" data-en="Email">البريد الإلكتروني</label>
+        <input type="email" id="User_email" name="User_email" required placeholder="example@mail.com">
+      </div>
+            <div class="form-group">
+              <label for="User_email_again" data-ar="تأكيد البريد الإلكتروني" data-en="Confirm Email">تأكيد البريد الإلكتروني</label>
+        <input type="email" id="User_email_again" name="User_email_again" required placeholder="example@mail.com">
+      </div>
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="User_password" data-ar="كلمة المرور" data-en="Password">كلمة المرور</label>
+              <input type="password" id="User_password" name="User_password" required minlength="6" placeholder="6 أحرف على الأقل">
+            </div>
+            <div class="form-group">
+              <label for="User_password_again" data-ar="تأكيد كلمة المرور" data-en="Confirm Password">تأكيد كلمة المرور</label>
+              <input type="password" id="User_password_again" name="User_password_again" required minlength="6" placeholder="أعد إدخال كلمة المرور">
+            </div>
+          </div>
+        </div>
+
+        <!-- Gender -->
+        <div class="form-section">
+          <div class="section-title">
+            <i class="fas fa-venus-mars"></i>
+            <span data-ar="الجنس" data-en="Gender">الجنس</span>
+          </div>
+          <div class="radio-group">
+            <label class="radio-option">
+              <input type="radio" value="male" name="gender" required>
+              <span data-ar="ذكر" data-en="Male">ذكر</span>
+            </label>
+            <label class="radio-option">
+              <input type="radio" value="female" name="gender">
+              <span data-ar="أنثى" data-en="Female">أنثى</span>
+            </label>
+      </div>
+      </div>
+
+        <!-- Account Type -->
+        <div class="form-section">
+          <div class="section-title">
+            <i class="fas fa-users"></i>
+            <span data-ar="نوع الحساب" data-en="Account Type">نوع الحساب</span>
+          </div>
+          <div class="radio-group">
+            <label class="radio-option">
+              <input type="radio" value="Student" name="occpation" required>
+              <span data-ar="طالب" data-en="Student">طالب</span>
+            </label>
+            <label class="radio-option">
+              <input type="radio" value="Teacher" name="occpation">
+              <span data-ar="معلم" data-en="Teacher">معلم</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- School Selection (for Students) -->
+  <div class="form-section hidden" id="schoolSection">
+          <div class="section-title">
+            <i class="fas fa-school"></i>
+            <span data-ar="اختيار المدرسة" data-en="School Selection">اختيار المدرسة</span>
+          </div>
+          <div class="form-group">
+            <label for="school_id" data-ar="المدرسة" data-en="School">المدرسة</label>
+            <select id="school_id" name="school_id" required>
+              <option value="" data-ar="اختر المدرسة" data-en="Select School">اختر المدرسة</option>
+              <option value="1" data-ar="مدرسة الفقيد محمد عبدالله السراجي" data-en="Al-Faqid School">مدرسة الفقيد محمد عبدالله السراجي</option>
+              <option value="2" data-ar="مدرسة الشهيد اللقية" data-en="Al-Shaheed Al-Luqia School">مدرسة الشهيد اللقية</option>
+              <option value="3" data-ar="مدرسة النور بالثوباني" data-en="Al-Noor Bithobani School">مدرسة النور بالثوباني</option>
+            </select>
+          </div>
+          <div id="schoolInfo" class="school-info hidden">
+            <h3 id="schoolName"></h3>
+            <p id="schoolManager"></p>
+            <p id="schoolAddress"></p>
+            <p id="schoolPhone"></p>
+          </div>
+        </div>
+
+        <!-- Grade Level (for Students) -->
+  <div class="form-section hidden" id="gradeSection">
+          <div class="section-title">
+            <i class="fas fa-layer-group"></i>
+            <span data-ar="المستوى الدراسي" data-en="Grade Level">المستوى الدراسي</span>
+          </div>
+          <div class="radio-group">
+            <label class="radio-option">
+              <input type="radio" value="أول ثانوي" name="grade_level">
+              <span data-ar="أول ثانوي" data-en="First Secondary">أول ثانوي</span>
+            </label>
+            <label class="radio-option">
+              <input type="radio" value="ثاني ثانوي" name="grade_level">
+              <span data-ar="ثاني ثانوي" data-en="Second Secondary">ثاني ثانوي</span>
+            </label>
+            <label class="radio-option">
+              <input type="radio" value="ثالث ثانوي" name="grade_level">
+              <span data-ar="ثالث ثانوي" data-en="Third Secondary">ثالث ثانوي</span>
+            </label>
+            <label class="radio-option">
+              <input type="radio" value="متخرج" name="grade_level">
+              <span data-ar="متخرج" data-en="Graduate">متخرج</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Graduate Options -->
+  <div class="form-section hidden" id="graduateSection">
+          <div class="section-title">
+            <i class="fas fa-graduation-cap"></i>
+            <span data-ar="خيارات المتخرج" data-en="Graduate Options">خيارات المتخرج</span>
+          </div>
+          <div class="radio-group">
+            <label class="radio-option">
+              <input type="radio" value="application" name="graduate_option">
+              <span data-ar="التقديم على المنح الدراسية" data-en="Apply for Scholarships">التقديم على المنح الدراسية</span>
+            </label>
+            <label class="radio-option">
+              <input type="radio" value="consultation" name="graduate_option">
+              <span data-ar="استشارة تعليمية" data-en="Educational Consultation">استشارة تعليمية</span>
+            </label>
+          </div>
+      </div>
+
+  <button type="submit" class="btn btn-primary w-100" data-ar="إنشاء الحساب" data-en="Create Account">إنشاء الحساب</button>
+        <div id="msg" class="msg"></div>
+    </form>
+
+      <div class="login-link">
+        <span data-ar="لديك حساب بالفعل؟" data-en="Already have an account?">لديك حساب بالفعل؟</span>
+        <a href="/login.html" data-ar="تسجيل الدخول" data-en="Login">تسجيل الدخول</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentLanguage = 'ar';
+    let schools = [];
+
+    // Language Toggle
+    function toggleLanguage() {
+      currentLanguage = currentLanguage === 'ar' ? 'en' : 'ar';
+      document.documentElement.lang = currentLanguage;
+      document.documentElement.dir = currentLanguage === 'ar' ? 'rtl' : 'ltr';
+      updateLanguage();
+    }
+
+    function updateLanguage() {
+      const elements = document.querySelectorAll('[data-ar][data-en]');
+      elements.forEach(el => {
+        el.textContent = el.getAttribute(`data-${currentLanguage}`);
+      });
+      
+      document.getElementById('lang-text').textContent = currentLanguage === 'ar' ? 'EN' : 'AR';
+    }
+
+    function buildApiUrl(path){
+      path = path.replace(/^\/+/, '');
+      const href = location.pathname; const marker='front-mocha-schools-website'; let basePrefix='../';
+      if(href.includes(marker)){
+        const after = href.split(marker)[1] || ''; const extra=after.split('/').filter(s=>s.length>0 && s.indexOf('.')===-1); basePrefix='../'.repeat(1+extra.length);
+      }
+      return basePrefix + path;
+    }
+
+    // Load Schools
+    async function loadSchools() {
+      try {
+  const response = await fetch(buildApiUrl('api/schools'));
+        const data = await response.json();
+        if (data.ok) {
+          schools = data.data;
+          const schoolSelect = document.getElementById('school_id');
+          schoolSelect.innerHTML = '<option value="" data-ar="اختر المدرسة" data-en="Select School">اختر المدرسة</option>';
+          
+          schools.forEach(school => {
+            const option = document.createElement('option');
+            option.value = school.id;
+            option.textContent = school.name;
+            schoolSelect.appendChild(option);
+          });
+        }
+      } catch (error) {
+        console.error('Error loading schools:', error);
+      }
+    }
+
+    // Show/Hide sections based on account type
+    function toggleSections() {
+      const accountType = document.querySelector('input[name="occpation"]:checked')?.value;
+      const schoolSection = document.getElementById('schoolSection');
+      const gradeSection = document.getElementById('gradeSection');
+      const graduateSection = document.getElementById('graduateSection');
+
+      if (accountType === 'Student') {
+        schoolSection.classList.remove('hidden');
+        gradeSection.classList.remove('hidden');
+        graduateSection.classList.add('hidden');
+      } else {
+        schoolSection.classList.add('hidden');
+        gradeSection.classList.add('hidden');
+        graduateSection.classList.add('hidden');
+      }
+    }
+
+    // Show school info when selected
+    function showSchoolInfo() {
+      const schoolId = document.getElementById('school_id').value;
+      const schoolInfo = document.getElementById('schoolInfo');
+      
+      if (schoolId) {
+        const school = schools.find(s => s.id == schoolId);
+        if (school) {
+          document.getElementById('schoolName').textContent = school.name;
+          document.getElementById('schoolManager').textContent = `المدير: ${school.manager_name}`;
+          document.getElementById('schoolAddress').textContent = `العنوان: ${school.address}`;
+          document.getElementById('schoolPhone').textContent = `الهاتف: ${school.phone}`;
+          schoolInfo.classList.remove('hidden');
+        }
+      } else {
+        schoolInfo.classList.add('hidden');
+      }
+    }
+
+    // Show graduate options when graduate is selected
+    function toggleGraduateOptions() {
+      const gradeLevel = document.querySelector('input[name="grade_level"]:checked')?.value;
+      const graduateSection = document.getElementById('graduateSection');
+      
+      if (gradeLevel === 'متخرج') {
+        graduateSection.classList.remove('hidden');
+      } else {
+        graduateSection.classList.add('hidden');
+      }
+    }
+
+    const form = document.getElementById("signupForm");
+    const msg = document.getElementById("msg");
+
+    function showMessage(text, isError) {
+      msg.textContent = text;
+      msg.className = "msg " + (isError ? "error" : "ok");
+      msg.style.display = "block";
+    }
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      msg.style.display = "none";
+
+      const first_name = form.User_first_name.value.trim();
+      const last_name = form.User_last_name.value.trim();
+      const email = form.User_email.value.trim();
+      const email2 = form.User_email_again.value.trim();
+      const password = form.User_password.value;
+      const password2 = form.User_password_again.value;
+      const gender = form.gender.value;
+      const occupation = form.occpation.value;
+      const school_id = form.school_id?.value;
+      const grade_level = form.grade_level?.value;
+      const graduate_option = form.graduate_option?.value;
+
+      // Validation
+      if (email !== email2) {
+        return showMessage(currentLanguage === 'ar' ? 'البريد الإلكتروني غير متطابق' : 'Emails do not match', true);
+      }
+      if (password !== password2) {
+        return showMessage(currentLanguage === 'ar' ? 'كلمة المرور غير متطابقة' : 'Passwords do not match', true);
+      }
+
+      if (occupation === 'Student' && !school_id) {
+        return showMessage(currentLanguage === 'ar' ? 'يرجى اختيار المدرسة' : 'Please select a school', true);
+      }
+
+      if (occupation === 'Student' && !grade_level) {
+        return showMessage(currentLanguage === 'ar' ? 'يرجى اختيار المستوى الدراسي' : 'Please select grade level', true);
+      }
+
+      if (grade_level === 'متخرج' && !graduate_option) {
+        return showMessage(currentLanguage === 'ar' ? 'يرجى اختيار خيار المتخرج' : 'Please select graduate option', true);
+      }
+
+      try {
+        const res = await fetch("/api/signup", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            first_name,
+            last_name,
+            email,
+            password,
+            gender,
+            occupation,
+            school_id,
+            grade_level,
+            graduate_option
+          })
+        });
+        const data = await res.json();
+        if (!res.ok || !data.ok) {
+          return showMessage(data.message || (currentLanguage === 'ar' ? 'فشل إنشاء الحساب' : 'Signup failed'), true);
+        }
+        showMessage(currentLanguage === 'ar' ? 'تم إرسال رمز التفعيل إلى بريدك الإلكتروني' : 'Activation code sent to your email', false);
+        form.reset();
+        toggleSections();
+      } catch (err) {
+        showMessage(currentLanguage === 'ar' ? 'خطأ في الخادم' : 'Server error', true);
+      }
+    });
+
+    // Event listeners
+    document.querySelectorAll('input[name="occpation"]').forEach(radio => {
+      radio.addEventListener('change', toggleSections);
+    });
+
+    document.querySelectorAll('input[name="grade_level"]').forEach(radio => {
+      radio.addEventListener('change', toggleGraduateOptions);
+    });
+
+    document.getElementById('school_id').addEventListener('change', showSchoolInfo);
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+      loadSchools();
+      updateLanguage();
+      toggleSections();
+    });
+  </script>
+</body>
+</html>

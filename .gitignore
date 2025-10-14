@@ -1,0 +1,29 @@
+# System files
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Logs and caches
+*.log
+api/_logs/
+logs/
+cache/
+
+# Node/Front-end
+node_modules/
+.pnpm-store/
+dist/
+build/
+
+# PHP/Composer
+vendor/
+composer.lock
+
+# Env/Secrets (none currently tracked, keep placeholders safe if added later)
+.env
+.env.local
+.env.*.local
+
+# IDE/editor
+.vscode/
+.idea/

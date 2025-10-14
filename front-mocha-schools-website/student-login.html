@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <link rel="stylesheet" href="css/site.css">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>تسجيل دخول الطالب</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+<style>
+:root {--primary:#2563eb;--primary-dark:#1d4ed8;--bg:#f1f5f9;--card:#fff;--border:#e2e8f0;--danger:#dc2626;--success:#16a34a;--text:#1e293b}
+body{margin:0;font-family:Tajawal,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto; background:var(--bg);color:var(--text);}
+.container{max-width:420px;margin:60px auto;padding:0 16px;}
+.card{background:var(--card);padding:32px 26px;border-radius:20px;box-shadow:0 8px 32px rgba(0,0,0,.08);border:1px solid var(--border);}
+h1{margin:0 0 18px;font-size:26px;color:var(--primary);text-align:center;font-weight:800;}
+label{font-weight:600;font-size:14px;margin-bottom:4px;display:block;}
+input{width:100%;padding:12px 14px;border:2px solid var(--border);border-radius:10px;font-size:15px;box-sizing:border-box;background:#fff;margin-bottom:14px;}
+input:focus{outline:none;border-color:var(--primary);} 
+.input-wrap{ position:relative; }
+.input-wrap input{ padding-right:44px; }
+.toggle-pass{ position:absolute; right:10px; top:50%; transform:translateY(-50%); background:transparent; border:none; color:#475569; cursor:pointer; padding:6px; z-index:2; }
+.btn{width:100%;padding:14px 0;font-size:16px;font-weight:700;background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;border:none;border-radius:12px;cursor:pointer;}
+.note{font-size:13px;line-height:1.5;color:#475569;margin-top:12px;text-align:center;}
+.request-link{color:var(--primary);text-decoration:underline;font-weight:600;}
+.msg{margin-top:12px;font-size:14px;text-align:center;display:none;padding:10px;border-radius:10px;}
+.msg.ok{background:#dcfce7;color:#166534;}
+.msg.err{background:#fee2e2;color:#991b1b;}
+small{display:block;margin-top:-8px;margin-bottom:12px;color:#64748b;font-size:12px;}
+.back-link{text-decoration:none;display:inline-block;margin-top:20px;font-size:14px;color:var(--primary);}
+footer{text-align:center;margin-top:40px;font-size:12px;color:#64748b;}
+</style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h1>دخول الطالب</h1>
+      <form id="loginForm" onsubmit="loginStudent(event)" autocomplete="on">
+        <label for="email">البريد الإلكتروني</label>
+        <input id="email" name="email" type="email" required placeholder="student@example.com" autocomplete="username">
+        <label for="password">كلمة المرور</label>
+        <div class="input-wrap">
+          <input id="password" name="password" type="password" required placeholder="••••••••" aria-label="كلمة المرور" autocomplete="current-password">
+          <button type="button" class="toggle-pass" aria-label="عرض/إخفاء كلمة المرور" title="عرض/إخفاء"><i class="fa-regular fa-eye"></i></button>
+        </div>
+        <label class="remember-row">
+          <input id="rememberMe" type="checkbox"> تذكرني على هذا الجهاز
+        </label>
+        <small>إذا لم يكن لديك حساب بعد: اضغط على زر طلب حساب في الصفحة الرئيسية ثم اختر (طالب) وحدد المدرسة والصف والجنس.</small>
+        <button type="submit" class="btn">دخول</button>
+        <div id="msg" class="msg"></div>
+      </form>
+      <a href="mocha-schools.html" class="back-link">← العودة للصفحة الرئيسية / طلب حساب</a>
+    </div>
+  <p class="note">لا تملك حساباً؟ انتقل للصفحة الرئيسية واضغط زر (طلب حساب) ثم اختر المدرسة والجنس والصف المناسب.</p>
+  <p class="note"><a href="mocha-schools.html#" class="request-link">اذهب لطلب حساب الآن</a></p>
+    <footer>© <span id="year"></span> مدارس المخا</footer>
+  </div>
+<script>
+ document.getElementById('year').textContent = new Date().getFullYear();
+function buildApiUrl(path){
+  path = path.replace(/^\/+/, '');
+  const href = location.pathname;
+  const marker = 'front-mocha-schools-website';
+  let basePrefix = '../';
+  if(href.includes(marker)){
+    const after = href.split(marker)[1] || '';
+    const extraSegments = after.split('/').filter(s=>s.length>0 && s.indexOf('.')===-1);
+    basePrefix = '../'.repeat(1 + extraSegments.length);
+  }
+  return basePrefix + path;
+}
+ async function apiFetch(path, options={}){
+   const res = await fetch(buildApiUrl(path), options);
+   if(res.status===401){ window.location.href='student-login.html?expired=1'; throw new Error('EXPIRED'); }
+   return res;
+ }
+ const msgs={ ar:{fill:'أكمل الحقول',checking:'جاري التحقق...',fail:'فشل الدخول',success:'تم الدخول بنجاح',network:'خطأ في الاتصال',expired:'انتهت صلاحية الجلسة، سجّل الدخول مجدداً'}, en:{fill:'Complete all fields',checking:'Verifying...',fail:'Login failed',success:'Logged in',network:'Network error',expired:'Session expired, please login again'} };
+ const lang='ar';
+ (function(){ if(new URLSearchParams(location.search).has('expired')){ const m=document.getElementById('msg'); m.textContent=msgs[lang].expired; m.className='msg err'; m.style.display='block'; } })();
+ async function loginStudent(e){
+   e.preventDefault();
+   const msg = document.getElementById('msg');
+   msg.style.display='none';
+   const email = document.getElementById('email').value.trim();
+   const password = document.getElementById('password').value.trim();
+  if(!email||!password){ msg.textContent=msgs[lang].fill; msg.className='msg err'; msg.style.display='block'; return; }
+  msg.textContent=msgs[lang].checking; msg.className='msg'; msg.style.display='block';
+   try {
+  const res = await apiFetch('api/auth.php',{ method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ email, password, role:'student' }) });
+     const data = await res.json();
+  if(!res.ok || !data.ok){ throw new Error(data.message||msgs[lang].fail); }
+  msg.textContent=msgs[lang].success; msg.className='msg ok';
+     localStorage.setItem('authToken', data.token);
+     localStorage.setItem('currentUser', JSON.stringify(data.user));
+    // Remember email optionally
+    const remember = document.getElementById('rememberMe').checked;
+    if(remember){
+      try{ localStorage.setItem('remember:student:email', email); }catch{}
+      try{
+        if('credentials' in navigator){
+          const cred = await navigator.credentials.create({ password: { id: email, password } });
+          if(cred) await navigator.credentials.store(cred);
+        }
+      }catch{}
+    } else {
+      try{ localStorage.removeItem('remember:student:email'); }catch{}
+    }
+     setTimeout(()=> location='student.html', 800);
+  }catch(err){ if(err.message==='EXPIRED') return; msg.textContent= err.message||msgs[lang].network; msg.className='msg err'; }
+ }
+ async function fakeAuth(email,password,role){
+   return new Promise(r=> setTimeout(()=> r({ok:true, approved:false, token:'pending-token'}), 900));
+ }
+// Show/Hide password toggle
+(function(){
+  const passEl = document.getElementById('password');
+  const btn = document.querySelector('.toggle-pass');
+  if(btn && passEl){
+    btn.addEventListener('click', ()=>{
+      const t = passEl.getAttribute('type')==='password' ? 'text' : 'password';
+      passEl.setAttribute('type', t);
+      btn.innerHTML = t==='password' ? '<i class="fa-regular fa-eye"></i>' : '<i class="fa-regular fa-eye-slash"></i>';
+    });
+  }
+  // Prefill remembered email
+  try{
+    const saved = localStorage.getItem('remember:student:email');
+    if(saved){
+      const emailEl = document.getElementById('email');
+      const chk = document.getElementById('rememberMe');
+      if(emailEl) emailEl.value = saved;
+      if(chk) chk.checked = true;
+    }
+  }catch{}
+})();
+</script>
+</body>
+</html>

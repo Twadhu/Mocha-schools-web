@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<title>أنشطة وفعاليات مدرسة الفقيد محمد عبدالله السراجي</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+<style>
+:root{--primary:#2563eb;--primary-dark:#1d4ed8;--bg:#ffffff;--light:#f1f5f9;--text:#1f2937;--muted:#64748b;--border:#e2e8f0;--danger:#dc2626;--success:#16a34a}
+body{margin:0;font-family:Tajawal,system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--light);color:var(--text)}
+.header{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;padding:40px 16px;position:relative;overflow:hidden}
+.header h1{margin:0;font-size:30px;font-weight:800;text-align:center}
+.header p{margin:12px auto 0;max-width:680px;text-align:center;line-height:1.6;font-size:15px;opacity:.95}
+.container{max-width:1100px;margin:0 auto;padding:32px 18px}
+.toolbar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:24px}
+.search{flex:1;min-width:220px}
+.search input{width:100%;padding:10px 14px;border:2px solid var(--border);border-radius:10px;font-size:14px}
+.activities-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:22px}
+.card{background:#fff;border:1px solid var(--border);border-radius:16px;padding:14px;display:flex;flex-direction:column;box-shadow:0 4px 10px rgba(0,0,0,.04);position:relative}
+.card h3{margin:10px 0 6px;font-size:16px;line-height:1.4;color:var(--primary)}
+.card p{margin:0 0 10px;font-size:13px;line-height:1.5;color:var(--muted)}
+.meta{font-size:11px;color:var(--muted);margin-top:auto;display:flex;justify-content:space-between;align-items:center}
+.thumb{width:100%;aspect-ratio:16/9;background:#000;border-radius:10px;overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center}
+.thumb video,.thumb img{width:100%;height:100%;object-fit:cover}
+.badge{position:absolute;top:8px;right:8px;background:#0f172a;color:#fff;font-size:10px;padding:4px 8px;border-radius:999px;opacity:.85}
+.actions{display:flex;gap:8px;margin-top:8px}
+.actions button,.actions a{flex:1;padding:8px 10px;font-size:12px;border:none;border-radius:8px;cursor:pointer;font-weight:600;display:inline-flex;align-items:center;justify-content:center;gap:6px;background:var(--primary);color:#fff;text-decoration:none}
+.actions button.secondary{background:#475569}
+.actions button.danger{background:var(--danger)}
+.empty{grid-column:1/-1;text-align:center;color:var(--muted);padding:40px}
+.loader{width:34px;height:34px;border:4px solid #cbd5e1;border-top-color:var(--primary);border-radius:50%;animation:spin 1s linear infinite;margin:40px auto}
+@keyframes spin{to{transform:rotate(360deg)}}
+.filter-info{font-size:12px;color:var(--muted);margin-bottom:4px}
+.video-quality{display:flex;gap:4px;margin-top:6px}
+.video-quality button{background:#1e293b;color:#fff;border:none;padding:4px 8px;font-size:11px;border-radius:6px;cursor:pointer}
+.video-quality button.active{background:var(--success)}
+/* Hero carousel */
+.hero-carousel{position:relative;border-radius:22px;overflow:hidden;max-width:1100px;margin:28px auto 0;background:#000;height:340px;box-shadow:0 10px 24px -8px rgba(0,0,0,.35)}
+.hero-carousel .slides{height:100%;width:100%;position:relative}
+.hero-carousel .slide{position:absolute;inset:0;background-size:contain;background-position:center;background-repeat:no-repeat;opacity:0;transition:opacity 1s ease}
+.hero-carousel .slide.active{opacity:1}
+.hero-carousel .overlay{position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,0,0,.55),rgba(0,0,0,.25))}
+.hero-carousel .caption{position:absolute;bottom:28px;right:32px;left:32px;font-size:20px;font-weight:600;line-height:1.5;color:#fff;text-shadow:0 2px 6px rgba(0,0,0,.7)}
+.hero-controls{position:absolute;top:50%;left:0;right:0;display:flex;justify-content:space-between;pointer-events:none;transform:translateY(-50%)}
+.hero-controls button{pointer-events:auto;background:rgba(255,255,255,.18);border:none;width:46px;height:46px;border-radius:50%;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);color:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .3s}
+.hero-controls button:hover{background:rgba(255,255,255,.35)}
+.hero-indicators{position:absolute;bottom:10px;left:0;right:0;display:flex;gap:8px;justify-content:center}
+.hero-indicators button{width:14px;height:14px;border-radius:50%;border:2px solid #fff;background:rgba(255,255,255,.4);cursor:pointer;padding:0}
+.hero-indicators button.active{background:#fff}
+@media (max-width:800px){
+  .hero-carousel{height:260px}
+  .hero-carousel .caption{font-size:16px;bottom:18px}
+}
+/* Footer */
+.site-footer{background:#0f172a;color:#fff;margin-top:40px;padding:28px 18px;line-height:1.8;font-size:14px;text-align:center}
+.site-footer .inner{max-width:900px;margin:0 auto}
+.meta-dim{opacity:.85}
+.hide{display:none!important}
+</style>
+</head>
+<body>
+<header class="header">
+  <h1>أنشطة وفعاليات مدرسة الفقيد محمد عبدالله السراجي</h1>
+  <p>مساحة مخصصة لاستعراض أحدث الأنشطة والفعاليات. سيتم تحديث هذه الصفحة تلقائياً بكل جديد يتم رفعه من لوحة الإدارة.</p>
+  <p style="color:#2563eb;font-weight:600;margin-top:8px">مسؤول الأنشطة والفعاليات: العاقل أحمد العطري</p>
+  <div id="heroCarousel" class="hero-carousel">
+    <div class="slides" id="heroSlides"></div>
+    <div class="hero-controls">
+      <button id="prevHero" aria-label="السابق">&#10094;</button>
+      <button id="nextHero" aria-label="التالي">&#10095;</button>
+    </div>
+    <div class="hero-indicators" id="heroIndicators"></div>
+  </div>
+</header>
+<div class="container">
+  <div class="toolbar">
+    <div class="search"><input id="searchBox" placeholder="ابحث في الأنشطة..." /></div>
+    <div class="total-info">إجمالي: <span id="count">0</span></div>
+  </div>
+  <div id="activities" class="activities-grid"></div>
+  <div id="loader" class="loader hide"></div>
+</div>
+<footer class="site-footer">
+  <div class="inner">
+    <strong>مدير المدرسة: منصور الوجيه</strong><br>
+    منسق الأنشطة والفعاليات: العاقل أحمد العطري<br>
+    <span class="meta-dim">سيتم إضافة معلومات التواصل قريباً</span> • <span class="meta-dim">سيتم إضافة الهيكل المدرسي لاحقاً</span>
+  </div>
+</footer>
+<script>
+// Two-image animated hero (no actual video)
+const heroImagesData = [
+  { file_url: '/public/hero/alsaraji-1.svg', caption: 'مدرسة الفقيد محمد عبدالله السراجي — صورة تمهيدية' },
+  { file_url: '/public/hero/alsaraji-2.svg', caption: 'مدرسة الفقيد محمد عبدالله السراجي — صورة تمهيدية' }
+];
+
+// Dynamic activities from API
+const SCHOOL_KEY = 's1'; // Al-faqaid
+let allActivitiesData = [];
+
+let heroIndex = 0, heroTimer = null;
+function humanDate(d){return new Date(d).toLocaleDateString('ar-EG',{year:'numeric',month:'short',day:'numeric'});} 
+
+async function loadStaticData(){
+  document.getElementById('loader').classList.add('hide');
+  if(heroImagesData && heroImagesData.length){ buildHero(heroImagesData); }
+  else { document.getElementById('heroCarousel').style.display='none'; }
+  try {
+    const res = await fetch(`/api/activities.php?school_id=${SCHOOL_KEY}&limit=100`);
+    const data = await res.json();
+    allActivitiesData = (data && data.ok && Array.isArray(data.activities)) ? data.activities : [];
+  } catch(_) { allActivitiesData = []; }
+  render(allActivitiesData);
+}
+
+function buildHero(images){
+  const slidesWrap = document.getElementById('heroSlides');
+  const indicators = document.getElementById('heroIndicators');
+  slidesWrap.innerHTML = images.map((img,i)=>`<div class="slide${i===0?' active':''}" style="background-image:url('${img.file_url}')">
+      <div class='overlay'></div>
+      <div class='caption'>${img.caption}</div>
+    </div>`).join('');
+  indicators.innerHTML = images.map((_,i)=>`<button ${i===0?'class="active"':''} onclick="goHero(${i}, ${images.length})" aria-label="${i+1}"></button>`).join('');
+  heroIndex = 0; startHero(images.length);
+}
+function goHero(i, total){ heroIndex=i; updateHero(total); restartHero(total); }
+function nextHero(total){ heroIndex = (heroIndex+1)%total; updateHero(total); }
+function prevHero(total){ heroIndex = (heroIndex-1+total)%total; updateHero(total); }
+function updateHero(total){
+  const slides=[...document.querySelectorAll('#heroSlides .slide')];
+  const inds=[...document.querySelectorAll('#heroIndicators button')];
+  slides.forEach((s,idx)=> s.classList.toggle('active', idx===heroIndex));
+  inds.forEach((b,idx)=> b.classList.toggle('active', idx===heroIndex));
+}
+function startHero(total){ heroTimer = setInterval(() => nextHero(total), 5000); }
+function restartHero(total){ clearInterval(heroTimer); startHero(total); }
+
+document.addEventListener('click', e=>{
+  if(e.target.id==='nextHero') { nextHero(heroImagesData.length); restartHero(heroImagesData.length); }
+  if(e.target.id==='prevHero') { prevHero(heroImagesData.length); restartHero(heroImagesData.length); }
+});
+document.addEventListener('mouseover', e=>{ if(e.target.closest('#heroCarousel')) clearInterval(heroTimer); });
+document.addEventListener('mouseout', e=>{ if(e.target.closest('#heroCarousel')) restartHero(heroImagesData.length); });
+
+function filterList(q){ if(!q) return allActivitiesData; return allActivitiesData.filter(a=> (a.title+a.description).toLowerCase().includes(q)); }
+function render(list){
+  document.getElementById('count').textContent = list.length;
+  const wrap = document.getElementById('activities');
+  if(!list.length){ wrap.innerHTML = `<div class='empty'>لا توجد أنشطة بعد. سيتم إضافتها لاحقاً.</div>`; return; }
+  wrap.innerHTML = list.map(item=>{
+    const media = item.media_type==='video' ? `<div class='thumb'><video controls preload='metadata'><source src='${item.file_url}' type='video/mp4'></video></div>` : `<div class='thumb'><img src='${item.file_url}' alt='${item.title}'/></div>`;
+    return `<div class='card'>${media}<h3>${item.title}</h3><p>${item.description||''}</p><div class='meta'><span>${humanDate(item.created_at)}</span><span>${item.media_type==='video'?'فيديو':'صورة'}</span></div></div>`;
+  }).join('');
+}
+document.getElementById('searchBox').addEventListener('input',(e)=> { const q=(e.target.value||'').trim().toLowerCase(); render(filterList(q)); });
+document.addEventListener('DOMContentLoaded', loadStaticData);
+
+// --- SSE toast ---
+(function(){
+  try {
+    const es = new EventSource('/api/stream/notifications.php');
+    function showToast(msg){
+      let t = document.getElementById('mkToast');
+      if(!t){ t = document.createElement('div'); t.id='mkToast'; t.style.cssText='position:fixed;bottom:18px;right:18px;background:#111827;color:#fff;padding:10px 14px;border-radius:10px;box-shadow:0 6px 16px rgba(0,0,0,.25);z-index:3000;font-size:13px;'; document.body.appendChild(t); }
+      t.textContent = msg; t.style.opacity='1'; setTimeout(()=>{ t.style.opacity='0'; }, 3500);
+    }
+    es.addEventListener('activity:new', (e)=>{ try{ const d=JSON.parse(e.data||'{}'); if(d.school_key==='s1' || String(d.school_id)==='1'){ showToast('تم إضافة نشاط جديد'); loadStaticData(); } }catch{} });
+  } catch(_){ }
+})();
+</script>
+</body>
+</html>

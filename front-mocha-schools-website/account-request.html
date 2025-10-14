@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-ar="طلب حساب | مدارس المخا" data-en="Account Request | Mocha Schools">طلب حساب | مدارس المخا</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="https://placehold.co/32x32/2563EB/FFFFFF?text=MS" type="image/png">
+    <style>
+        body { font-family: 'Tajawal', sans-serif; }
+        html[lang="en"] body { font-family: 'Poppins', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <header class="bg-white shadow-sm">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="index.html" class="flex items-center gap-2">
+                <svg class="w-8 h-8 text-blue-600" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                <h1 class="text-xl font-bold text-blue-600" data-ar="مدارس المخا" data-en="Mocha Schools">مدارس المخا</h1>
+            </a>
+            <a href="index.html" class="text-blue-600 hover:text-blue-700 font-semibold" data-ar="→ العودة للرئيسية" data-en="→ Back to Home">→ العودة للرئيسية</a>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-6 py-12">
+        <div class="max-w-2xl mx-auto bg-white p-8 rounded-xl shadow-lg">
+            <div id="form-container">
+                <div class="text-center mb-8">
+                    <h1 class="text-3xl font-bold" data-ar="طلب إنشاء حساب" data-en="Request an Account">طلب إنشاء حساب</h1>
+                    <p class="text-gray-600 mt-2" data-ar="يرجى تعبئة النموذج التالي. سيتم مراجعة طلبك من قبل الإدارة." data-en="Please fill out the form below. Your request will be reviewed by the administration.">يرجى تعبئة النموذج التالي.</p>
+                </div>
+                <form id="account-request-form" class="space-y-6">
+                    <div>
+                        <label class="font-semibold" data-ar="أنا..." data-en="I am a...">أنا...</label>
+                        <div class="mt-2 flex gap-4">
+                            <label class="flex items-center gap-2 p-4 border rounded-lg flex-1 cursor-pointer"><input type="radio" name="role" value="student" class="h-4 w-4 text-blue-600" checked> <span data-ar="طالب" data-en="Student">طالب</span></label>
+                            <label class="flex items-center gap-2 p-4 border rounded-lg flex-1 cursor-pointer"><input type="radio" name="role" value="teacher" class="h-4 w-4 text-blue-600"> <span data-ar="معلم" data-en="Teacher">معلم</span></label>
+                        </div>
+                    </div>
+
+                    <div><label for="fullName" class="block font-semibold" data-ar="الاسم الكامل" data-en="Full Name">الاسم الكامل</label><input type="text" id="fullName" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm" required></div>
+                    <div><label for="dob" class="block font-semibold" data-ar="تاريخ الميلاد" data-en="Date of Birth">تاريخ الميلاد</label><input type="date" id="dob" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm" required></div>
+                    
+                    <div>
+                        <label for="school" class="block font-semibold" data-ar="المدرسة" data-en="School">المدرسة</label>
+                        <select id="school" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm" required>
+                            <option value="1" data-ar="مدرسة الفقيد محمد عبدالله السراجي" data-en="Al-Saraji School">مدرسة الفقيد محمد عبدالله السراجي</option>
+                            <option value="2" data-ar="مدرسة الشهيد اللقية" data-en="Al-Luqya Martyr School">مدرسة الشهيد اللقية</option>
+                            <option value="3" data-ar="مدرسة النور بالثوباني" data-en="Al-Noor School, Thobani">مدرسة النور بالثوباني</option>
+                            <option value="other" data-ar="أخرى" data-en="Other">أخرى</option>
+                        </select>
+                    </div>
+
+                    <div id="grade-level-container">
+                        <label for="gradeLevel" class="block font-semibold" data-ar="الصف الدراسي" data-en="Grade Level">الصف الدراسي</label>
+                        <select id="gradeLevel" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm">
+                            <option value="9" data-ar="الصف التاسع" data-en="9th Grade">الصف التاسع</option>
+                            <option value="10" data-ar="الأول الثانوي" data-en="10th Grade">الأول الثانوي</option>
+                            <option value="11" data-ar="الثاني الثانوي" data-en="11th Grade">الثاني الثانوي</option>
+                            <option value="12" data-ar="الثالث الثانوي" data-en="12th Grade">الثالث الثانوي</option>
+                            <option value="graduate" data-ar="متخرج" data-en="Graduate">متخرج</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 transition" data-ar="إرسال الطلب" data-en="Submit Request">إرسال الطلب</button>
+                </form>
+            </div>
+            <div id="message-container" class="hidden text-center"></div>
+        </div>
+    </main>
+    
+    <footer class="bg-gray-800 text-white mt-16">
+        <div class="container mx-auto px-6 py-8 text-center text-gray-400 text-sm">
+            <p>&copy; <span id="current-year"></span> Mocha Schools. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('current-year').textContent = new Date().getFullYear();
+            
+            const roleRadios = document.querySelectorAll('input[name="role"]');
+            const gradeLevelContainer = document.getElementById('grade-level-container');
+            const form = document.getElementById('account-request-form');
+            const formContainer = document.getElementById('form-container');
+            const messageContainer = document.getElementById('message-container');
+
+            roleRadios.forEach(radio => {
+                radio.addEventListener('change', (event) => {
+                    gradeLevelContainer.style.display = event.target.value === 'student' ? 'block' : 'none';
+                });
+            });
+
+            form.addEventListener('submit', (event) => {
+                event.preventDefault();
+                const school = document.getElementById('school').value;
+                const gradeLevel = document.getElementById('gradeLevel').value;
+
+                formContainer.classList.add('hidden');
+                messageContainer.classList.remove('hidden');
+
+                if (school === 'other' || (gradeLevel === 'graduate' && document.querySelector('input[name="role"]:checked').value === 'student')) {
+                    messageContainer.innerHTML = `
+                        <h2 class="text-2xl font-bold text-yellow-600" data-ar="ملاحظة هامة" data-en="Important Note">ملاحظة هامة</h2>
+                        <p class="mt-4 text-gray-700" data-ar="هذه المنصة مخصصة حاليًا لطلاب المدارس الشريكة لنا. لكن يمكنك الاستفادة من خدماتنا ومواردنا العامة عبر النقر على الزر أدناه." data-en="This platform is currently dedicated to students of our partner schools. However, you can benefit from our public services and resources by clicking the button below.">هذه المنصة مخصصة حاليًا لطلاب المدارس الشريكة لنا.</p>
+                        <a href="start-now.html" class="mt-6 inline-block bg-blue-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-700 transition" data-ar="ابدأ الآن" data-en="Start Now">ابدأ الآن</a>
+                    `;
+                } else {
+                    messageContainer.innerHTML = `
+                        <h2 class="text-2xl font-bold text-green-600" data-ar="تم إرسال طلبك بنجاح!" data-en="Request Sent Successfully!">تم إرسال طلبك بنجاح!</h2>
+                        <p class="mt-4 text-gray-700" data-ar="لقد تم إرسال طلبك إلى إدارة المدرسة للمراجعة. سيتم إعلامك بحالة الطلب عبر البريد الإلكتروني. لا يمكنك الدخول إلى البوابة حتى تتم الموافقة على طلبك." data-en="Your request has been sent to the school administration for review. You will be notified of the status via email. You cannot log in to the portal until your request is approved.">لقد تم إرسال طلبك للمراجعة.</p>
+                    `;
+                }
+            });
+        });
+    </script>
+</body>
+</html>

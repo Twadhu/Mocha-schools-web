@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-ar="الدعم الفني | مدارس المخا" data-en="Support | Mocha Schools" data-zh="技术支持 | 摩卡学校" data-ru="Техподдержка | Школы Мокки">الدعم الفني | مدارس المخا</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Poppins:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="https://placehold.co/32x32/2563EB/FFFFFF?text=MS" type="image/png">
+    <style>
+        :root {
+            --font-ar: 'Tajawal', sans-serif;
+            --font-en: 'Poppins', sans-serif;
+            --font-zh: 'Noto Sans SC', sans-serif;
+            --font-ru: 'Roboto', sans-serif;
+        }
+        html[lang="ar"] body { font-family: var(--font-ar); }
+        html[lang="en"] body { font-family: var(--font-en); }
+        html[lang="zh"] body { font-family: var(--font-zh); }
+        html[lang="ru"] body { font-family: var(--font-ru); }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <header class="bg-white shadow-sm">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="index.html" class="flex items-center gap-2">
+                <svg class="w-8 h-8 text-blue-600" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                <h1 class="text-xl font-bold text-blue-600" data-ar="مدارس المخا" data-en="Mocha Schools" data-zh="摩卡学校" data-ru="Школы Мокки">مدارس المخا</h1>
+            </a>
+            <a href="index.html" class="text-blue-600 hover:text-blue-700 font-semibold" data-ar="→ العودة للرئيسية" data-en="→ Back to Home" data-zh="→ 返回主页" data-ru="→ На главную">→ العودة للرئيسية</a>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-6 py-12">
+        <div class="max-w-2xl mx-auto bg-white p-8 rounded-xl shadow-lg">
+            <div id="form-container">
+                <div class="text-center mb-8">
+                    <h1 class="text-3xl font-bold" data-ar="تواصل مع الدعم الفني" data-en="Contact Technical Support" data-zh="联系技术支持" data-ru="Связаться с техподдержкой">تواصل مع الدعم الفني</h1>
+                    <p class="text-gray-600 mt-2" data-ar="نواجه مشكلة؟ نحن هنا للمساعدة. يرجى وصف المشكلة بالتفصيل." data-en="Facing an issue? We're here to help. Please describe the problem in detail." data-zh="遇到问题？我们在此提供帮助。请详细描述问题。" data-ru="Столкнулись с проблемой? Мы здесь, чтобы помочь. Пожалуйста, опишите проблему подробно.">نواجه مشكلة؟ نحن هنا للمساعدة.</p>
+                </div>
+                <form id="support-form" class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div><label for="name" class="block font-semibold" data-ar="الاسم الكامل" data-en="Full Name" data-zh="全名" data-ru="Полное имя">الاسم الكامل</label><input type="text" id="name" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm"></div>
+                        <div><label for="email" class="block font-semibold" data-ar="البريد الإلكتروني" data-en="Email Address" data-zh="电子邮件地址" data-ru="Электронная почта">البريد الإلكتروني</label><input type="email" id="email" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm"></div>
+                    </div>
+                    <div><label for="description" class="block font-semibold" data-ar="وصف المشكلة" data-en="Problem Description" data-zh="问题描述" data-ru="Описание проблемы">وصف المشكلة</label><textarea id="description" rows="4" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm"></textarea></div>
+                    <div><label for="attachment" class="block font-semibold" data-ar="إرفاق ملف (اختياري)" data-en="Attach File (Optional)" data-zh="附加文件（可选）" data-ru="Прикрепить файл (необязательно)">إرفاق ملف (اختياري)</label><input type="file" id="attachment" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"></div>
+                    <div><label class="flex items-center gap-2"><input type="checkbox" id="robot-check" required class="h-4 w-4 rounded text-blue-600"> <span data-ar="أنا لست برنامج روبوت" data-en="I am not a robot" data-zh="我不是机器人" data-ru="Я не робот">أنا لست برنامج روبوت</span></label></div>
+                    <button type="submit" class="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 transition" data-ar="إرسال الطلب" data-en="Submit Ticket" data-zh="提交工单" data-ru="Отправить заявку">إرسال الطلب</button>
+                </form>
+            </div>
+            <div id="message-container" class="hidden text-center">
+                 <h2 class="text-2xl font-bold text-green-600" data-ar="تم إرسال رسالتك بنجاح!" data-en="Your message has been sent successfully!" data-zh="您的消息已成功发送！" data-ru="Ваше сообщение успешно отправлено!">تم إرسال رسالتك بنجاح!</h2>
+                 <p class="mt-4 text-gray-700" data-ar="شكراً لتواصلك معنا. سيقوم فريق الدعم بمراجعة طلبك والرد في أقرب وقت ممكن." data-en="Thank you for contacting us. Our support team will review your ticket and respond as soon as possible." data-zh="感谢您联系我们。我们的支持团队将审核您的工单并尽快回复。" data-ru="Спасибо за обращение. Наша команда поддержки рассмотрит вашу заявку и ответит в кратчайшие сроки.">شكراً لتواصلك معنا.</p>
+            </div>
+        </div>
+    </main>
+    
+    <footer class="bg-gray-800 text-white mt-16">
+        <div class="container mx-auto px-6 py-8 text-center text-gray-400 text-sm">
+            <p>&copy; <span id="current-year"></span> Mocha Schools. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('current-year').textContent = new Date().getFullYear();
+            
+            const form = document.getElementById('support-form');
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                document.getElementById('form-container').classList.add('hidden');
+                document.getElementById('message-container').classList.remove('hidden');
+            });
+        });
+    </script>
+</body>
+</html>

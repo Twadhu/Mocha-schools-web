@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-ar="الكادر التعليمي - مدرسة النور" data-en="Staff - Al-Noor School" data-zh="教职员工 - 阿尔努尔学校" data-ru="Коллектив - Школа Ан-Нур">الكادر التعليمي - مدرسة النور</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Poppins:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="S1photo.png" type="image/png">
+
+    <style>
+        :root {
+            --font-ar: 'Tajawal', sans-serif;
+            --font-en: 'Poppins', sans-serif;
+            --font-zh: 'Noto Sans SC', sans-serif;
+            --font-ru: 'Roboto', sans-serif;
+        }
+        html[lang="ar"] body { font-family: var(--font-ar); }
+        html[lang="en"] body { font-family: var(--font-en); }
+        html[lang="zh"] body { font-family: var(--font-zh); }
+        html[lang="ru"] body { font-family: var(--font-ru); }
+        body { background-color: #f8fafc; }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <header class="bg-white shadow-sm sticky top-0 z-20">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="school-activities-alnoor.html" class="flex items-center gap-3">
+                <img src="S1photo.png" alt="School Logo" class="w-10 h-10 rounded-full object-cover">
+                <h1 class="text-xl font-bold text-gray-800" data-ar="مدرسة النور" data-en="Al-Noor School" data-zh="阿尔努尔学校" data-ru="Школа Ан-Нур">مدرسة النور</h1>
+            </a>
+            <div class="flex items-center gap-4">
+                 <div class="relative">
+                    <button id="lang-switcher-button" class="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 p-2 rounded-full">
+                        <span id="current-lang-flag"></span>
+                    </button>
+                    <div id="lang-switcher-menu" class="hidden absolute top-full mt-2 right-0 bg-white rounded-lg shadow-xl border w-40">
+                        <a href="#" onclick="changeLanguage('ar')" class="flex items-center gap-2 p-2 hover:bg-gray-100"><span>🇾🇪</span> العربية</a>
+                        <a href="#" onclick="changeLanguage('en')" class="flex items-center gap-2 p-2 hover:bg-gray-100"><span>🇬🇧</span> English</a>
+                        <a href="#" onclick="changeLanguage('zh')" class="flex items-center gap-2 p-2 hover:bg-gray-100"><span>🇨🇳</span> 中文</a>
+                        <a href="#" onclick="changeLanguage('ru')" class="flex items-center gap-2 p-2 hover:bg-gray-100"><span>🇷🇺</span> Русский</a>
+                    </div>
+                </div>
+                <a href="school-activities-alnoor.html" class="text-yellow-600 hover:text-yellow-700 font-semibold" data-ar="→ العودة" data-en="→ Go Back" data-zh="→ 返回" data-ru="→ Назад">→ العودة</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-6 py-12">
+        <div class="flex flex-col md:flex-row gap-8">
+            <!-- Staff List -->
+            <aside class="w-full md:w-1/3 lg:w-1/4">
+                <div class="sticky top-24">
+                    <h2 class="text-xl font-bold mb-4" data-ar="قائمة الموظفين" data-en="Staff List" data-zh="员工列表" data-ru="Список сотрудников">قائمة الموظفين</h2>
+                    <div id="staff-list-container" class="space-y-2 max-h-[70vh] overflow-y-auto ltr:pr-2 rtl:pl-2">
+                        <!-- Staff list will be injected here -->
+                    </div>
+                </div>
+            </aside>
+            <!-- Staff Details -->
+            <section id="staff-details-container" class="w-full md:w-2/3 lg:w-3/4">
+                <!-- Staff details will be injected here -->
+            </section>
+        </div>
+    </main>
+    
+    <footer class="bg-gray-800 text-white mt-16">
+        <div class="container mx-auto px-6 py-10">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                <div class="col-span-2 md:col-span-1"><h3 class="font-bold text-lg mb-2" data-ar="مدرسة النور بالثوباني" data-en="Al-Noor School, Thobani" data-zh="阿尔努尔学校" data-ru="Школа Ан-Нур, Тубани">مدرسة النور بالثوباني</h3><p class="text-gray-400 text-sm" data-ar="جزء من مبادرة مدارس المخا التعليمية." data-en="Part of the Mocha Schools educational initiative." data-zh="摩卡学校教育倡议的一部分。" data-ru="Часть образовательной инициативы Школы Мокки.">جزء من مبادرة...</p></div>
+                <div><h4 class="font-semibold mb-3" data-ar="روابط سريعة" data-en="Quick Links" data-zh="快速链接" data-ru="Быстрые ссылки">روابط سريعة</h4><ul class="space-y-2"><li><a href="school-activities-alnoor.html" class="text-gray-400 hover:text-white text-sm" data-ar="عن المدرسة" data-en="About" data-zh="关于" data-ru="О нас">عن المدرسة</a></li><li><a href="school-staff.html" class="text-gray-400 hover:text-white text-sm" data-ar="هيكل المدرسة" data-en="School Staff" data-zh="学校员工" data-ru="Коллектив школы">هيكل المدرسة</a></li></ul></div>
+                <div><h4 class="font-semibold mb-3" data-ar="مواقع صديقة" data-en="Related Sites" data-zh="相关网站" data-ru="Связанные сайты">مواقع صديقة</h4><ul class="space-y-2"><li><a href="../../mocha-schools.html" class="text-gray-400 hover:text-white text-sm" data-ar="بوابة مدارس المخا" data-en="Mocha Schools Portal" data-zh="摩卡学校门户" data-ru="Портал Школы Мокки">بوابة مدارس المخا</a></li></ul></div>
+                 <div><h4 class="font-semibold mb-3" data-ar="المطور" data-en="Developer" data-zh="开发者" data-ru="Разработчик">المطور</h4><p class="text-gray-400 text-sm">Abdullah Faisal Abbas</p></div>
+            </div>
+            <div class="mt-8 border-t border-gray-700 pt-6 text-center text-gray-500 text-sm"><p>&copy; <span id="current-year"></span> Mocha Schools. All rights reserved.</p></div>
+        </div>
+    </footer>
+
+    <script>
+        const allStaff = [
+            // Permanent Staff (18)
+            { id: 1, type: 'permanent', name_ar: "أنور محمد احمد جاموس", position_ar: "مدير", specialty_ar: "قرآن", subjects_ar: "إدارة", classes_ar: "", message_ar: "كلمة المدير: نرحب بكم في صرحنا التعليمي، ونسعى دائمًا لتوفير بيئة تعليمية محفزة لأبنائنا الطلاب." },
+            { id: 2, type: 'permanent', name_ar: "يحيى ابراهيم محمد عوض", position_ar: "وكيل", specialty_ar: "انجليزي", subjects_ar: "لغة إنجليزية", classes_ar: "ثانوية" },
+            { id: 3, type: 'permanent', name_ar: "عبده محمد محمد يحيى غويث", position_ar: "مدرس وكنترول", specialty_ar: "جغرافيا", subjects_ar: "اجتماعيات, جغرافيا", classes_ar: "9, 10", message_ar: "كلمة الكنترول: نعمل بجد لضمان سير العملية الامتحانية بشفافية ونزاهة تامة." },
+            { id: 14, type: 'permanent', name_ar: "حسين احمد حسن الرويعي", position_ar: "مدرس ومنسق الأنشطة الرياضية", specialty_ar: "عام", subjects_ar: "تربية إسلامية", classes_ar: "ثانوية", message_ar: "كلمة منسق الأنشطة: الأنشطة اللاصفية هي روح المدرسة التي تبني شخصية الطالب وتصقل مواهبه." },
+            { id: 4, type: 'permanent', name_ar: "علي ثابت إبراهيم مكي", position_ar: "مدرس", specialty_ar: "فيزياء", subjects_ar: "فيزياء", classes_ar: "10, 11, 12" },
+            { id: 5, type: 'permanent', name_ar: "علي احمد حسن الذبحاني", position_ar: "مدرس", specialty_ar: "كيمياء", subjects_ar: "كيمياء", classes_ar: "10, 11, 12" },
+            { id: 6, type: 'permanent', name_ar: "إبراهيم محمد احمد جاموس", position_ar: "مدرس", specialty_ar: "رياضيات", subjects_ar: "رياضيات", classes_ar: "10, 11, 12" },
+            { id: 7, type: 'permanent', name_ar: "محمد إبراهيم قاسم الشميري", position_ar: "مدرس", specialty_ar: "أحياء", subjects_ar: "أحياء", classes_ar: "10, 11, 12" },
+            { id: 8, type: 'permanent', name_ar: "عبدالله سعيد محمد عكيش", position_ar: "مدرس", specialty_ar: "علوم", subjects_ar: "علوم", classes_ar: "7, 8, 9" },
+            { id: 9, type: 'permanent', name_ar: "عبده عبدالله حسن عثمان", position_ar: "مدرس", specialty_ar: "عام", subjects_ar: "اجتماعيات", classes_ar: "4, 5, 6" },
+            { id: 10, type: 'permanent', name_ar: "محمد احمد عبده حائك", position_ar: "مدرس", specialty_ar: "قرآن", subjects_ar: "قرآن كريم", classes_ar: "10, 11, 12" },
+            { id: 11, type: 'permanent', name_ar: "عبده محمد إبراهيم عبده", position_ar: "مدرس", specialty_ar: "رياضيات", subjects_ar: "رياضيات", classes_ar: "7, 8, 9" },
+            { id: 12, type: 'permanent', name_ar: "محمد غالب قريش احمد", position_ar: "مدرس", specialty_ar: "إنجليزي", subjects_ar: "لغة إنجليزية", classes_ar: "7, 8, 9" },
+            { id: 13, type: 'permanent', name_ar: "محمد إبراهيم محمد صالح المساوى", position_ar: "مدرس", specialty_ar: "عام", subjects_ar: "إسلامية, قرآن", classes_ar: "4, 5, 6" },
+            { id: 15, type: 'permanent', name_ar: "سهام حسن محمد سالم", position_ar: "مدرسة", specialty_ar: "عام", subjects_ar: "معلمة صف", classes_ar: "3" },
+            { id: 16, type: 'permanent', name_ar: "هناء عبدالله احمد خليل", position_ar: "مدرسة", specialty_ar: "عام", subjects_ar: "معلمة صف", classes_ar: "2" },
+            { id: 17, type: 'permanent', name_ar: "انتصار عبده علي احمد", position_ar: "مدرسة", specialty_ar: "عام", subjects_ar: "معلمة صف", classes_ar: "1" },
+            { id: 18, type: 'permanent', name_ar: "علي محمد علي حسن", position_ar: "سكرتير", specialty_ar: "سكرتارية", subjects_ar: "أعمال إدارية", classes_ar: "" },
+
+            // Volunteer Staff (12)
+            { id: 19, type: 'volunteer', name_ar: "لمياء صالح قائد عبدالله قليهط", position_ar: "متطوعة", specialty_ar: "حاسوب", subjects_ar: "حاسوب", classes_ar: "أساسي" },
+            { id: 20, type: 'volunteer', name_ar: "جميل محمد صالح منه", position_ar: "متطوع", specialty_ar: "قرآن", subjects_ar: "قرآن كريم", classes_ar: "7, 8, 9" },
+            { id: 21, type: 'volunteer', name_ar: "وائل عبدالله سليمان سالم", position_ar: "متطوع", specialty_ar: "شريعة", subjects_ar: "تربية إسلامية", classes_ar: "7, 8" },
+            { id: 22, type: 'volunteer', name_ar: "عواضة عبدالله علي منه", position_ar: "متطوعة", specialty_ar: "عام", subjects_ar: "معلمة صف", classes_ar: "1ب" },
+            { id: 23, type: 'volunteer', name_ar: "نجاة حسن محمد علي", position_ar: "متطوعة", specialty_ar: "عام", subjects_ar: "معلمة صف", classes_ar: "1أ" },
+            { id: 24, type: 'volunteer', name_ar: "نبيلة إبراهيم حسن مرير", position_ar: "متطوعة", specialty_ar: "عام", subjects_ar: "معلمة صف", classes_ar: "2ب" },
+            { id: 25, type: 'volunteer', name_ar: "تسنيم يحيى إبراهيم مكعبب", position_ar: "متطوعة", specialty_ar: "عام", subjects_ar: "معلمة صف", classes_ar: "2ج" },
+            { id: 26, type: 'volunteer', name_ar: "أسماء محمد عبدالله داس", position_ar: "متطوعة", specialty_ar: "عام", subjects_ar: "معلمة صف", classes_ar: "1ج" },
+            { id: 27, type: 'volunteer', name_ar: "عفاف احمد حسن", position_ar: "متطوعة", specialty_ar: "عام", subjects_ar: "معلمة صف", classes_ar: "3ب" },
+            { id: 28, type: 'volunteer', name_ar: "سعاد احمد حسن", position_ar: "متطوعة", specialty_ar: "عام", subjects_ar: "معلمة صف", classes_ar: "3ج" },
+            { id: 29, type: 'volunteer', name_ar: "بدرية سعيد عبدالله", position_ar: "متطوعة", specialty_ar: "عام", subjects_ar: "معلمة صف", classes_ar: "3أ" },
+            { id: 30, type: 'volunteer', name_ar: "سعيد محمد قائد قليهط", position_ar: "متطوع", specialty_ar: "خدمات", subjects_ar: "حارس", classes_ar: "" }
+        ].map(s => ({
+            ...s, // Spread original Arabic data
+            // Add placeholder translations, copying from Arabic if not specified
+            name_en: s.name_en || s.name_ar,
+            position_en: s.position_en || s.position_ar,
+            specialty_en: s.specialty_en || s.specialty_ar,
+            subjects_en: s.subjects_en || s.subjects_ar,
+            classes_en: s.classes_en || s.classes_ar,
+            message_en: s.message_en || s.message_ar,
+            name_zh: s.name_zh || s.name_ar,
+            position_zh: s.position_zh || s.position_ar,
+            specialty_zh: s.specialty_zh || s.specialty_ar,
+            subjects_zh: s.subjects_zh || s.subjects_ar,
+            classes_zh: s.classes_zh || s.classes_ar,
+            message_zh: s.message_zh || s.message_ar,
+            name_ru: s.name_ru || s.name_ar,
+            position_ru: s.position_ru || s.position_ar,
+            specialty_ru: s.specialty_ru || s.specialty_ar,
+            subjects_ru: s.subjects_ru || s.subjects_ar,
+            classes_ru: s.classes_ru || s.classes_ar,
+            message_ru: s.message_ru || s.message_ar,
+        }));
+
+
+        let currentLang = 'ar';
+        const langData = { ar: { flag: '🇾🇪' }, en: { flag: '🇬🇧' }, zh: { flag: '🇨🇳' }, ru: { flag: '🇷🇺' } };
+        const htmlEl = document.documentElement;
+        const elementsToTranslate = document.querySelectorAll('[data-ar]');
+
+        function changeLanguage(lang) {
+            currentLang = lang;
+            updateLanguage();
+        }
+
+        function updateLanguage() {
+            htmlEl.lang = currentLang;
+            htmlEl.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+            document.getElementById('current-lang-flag').textContent = langData[currentLang].flag;
+            
+            elementsToTranslate.forEach(el => { if(el.dataset[currentLang]) el.textContent = el.dataset[currentLang]; });
+
+            const activeId = document.querySelector('#staff-list-container button.bg-yellow-100')?.dataset.staffId || 1;
+            renderStaffList(parseInt(activeId));
+            renderStaffDetails(parseInt(activeId));
+        }
+
+        function renderStaffList(activeId) {
+            const listContainer = document.getElementById('staff-list-container');
+            const permanentStaff = allStaff.filter(s => s.type === 'permanent');
+            const volunteerStaff = allStaff.filter(s => s.type === 'volunteer');
+
+            const t = {
+                permanent: {ar: 'المثبتون', en: 'Permanent', zh: '正式员工', ru: 'Постоянные'},
+                volunteers: {ar: 'المتطوعون', en: 'Volunteers', zh: '志愿者', ru: 'Волонтеры'}
+            };
+
+            let html = `<h3 class="font-bold text-yellow-600 mb-2">${t.permanent[currentLang]}</h3>`;
+            html += permanentStaff.map(staff => createListItem(staff, activeId)).join('');
+            
+            html += `<h3 class="font-bold text-blue-600 mt-4 mb-2">${t.volunteers[currentLang]}</h3>`;
+            html += volunteerStaff.map(staff => createListItem(staff, activeId)).join('');
+
+            listContainer.innerHTML = html;
+        }
+
+        function createListItem(staff, activeId) {
+            const isActive = staff.id === activeId;
+            return `
+                <button onclick="renderStaffDetails(${staff.id})" 
+                        data-staff-id="${staff.id}"
+                        class="w-full text-start p-3 rounded-md transition-colors ${isActive ? 'bg-yellow-100' : 'hover:bg-gray-100'}">
+                    <p class="font-semibold ${isActive ? 'text-yellow-800' : 'text-gray-800'}">أ/ ${staff['name_' + currentLang] || staff.name_ar}</p>
+                    <p class="text-sm ${isActive ? 'text-yellow-700' : 'text-gray-500'}">${staff['position_' + currentLang] || staff.position_ar}</p>
+                </button>
+            `;
+        }
+
+        function renderStaffDetails(staffId) {
+            const staff = allStaff.find(s => s.id === staffId);
+            if (!staff) return;
+
+            const detailsContainer = document.getElementById('staff-details-container');
+            const lang = currentLang;
+
+            const t = {
+                specialty: {ar: 'التخصص', en: 'Specialty', zh: '专业', ru: 'Специальность'},
+                subjects: {ar: 'المواد', en: 'Subjects', zh: '科目', ru: 'Предметы'},
+                classes: {ar: 'الصفوف', en: 'Classes', zh: '班级', ru: 'Классы'},
+                message: {ar: 'رسالة', en: 'Message', zh: '寄语', ru: 'Сообщение'},
+                not_specified: {ar: 'غير محدد', en: 'Not specified', zh: '未指定', ru: 'Не указано'},
+                na: {ar: 'N/A', en: 'N/A', zh: '不适用', ru: 'Н/Д'}
+            };
+            
+            detailsContainer.innerHTML = `
+                <div class="bg-white rounded-xl shadow-lg p-8 sticky top-24">
+                    <div class="text-center">
+                        <div class="w-32 h-32 rounded-full bg-gray-200 mx-auto mb-4 flex items-center justify-center">
+                            <svg class="w-16 h-16 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>
+                        </div>
+                        <h2 class="text-2xl font-bold">أ/ ${staff['name_' + lang] || staff.name_ar}</h2>
+                        <p class="text-yellow-600 font-semibold text-lg">${staff['position_' + lang] || staff.position_ar}</p>
+                    </div>
+                    <div class="mt-6 border-t pt-6 space-y-2 text-md">
+                        <p><strong class="font-semibold w-24 inline-block">${t.specialty[lang]}:</strong> ${staff['specialty_' + lang] || staff.specialty_ar || t.not_specified[lang]}</p>
+                        <p><strong class="font-semibold w-24 inline-block">${t.subjects[lang]}:</strong> ${staff['subjects_' + lang] || staff.subjects_ar || t.not_specified[lang]}</p>
+                        <p><strong class="font-semibold w-24 inline-block">${t.classes[lang]}:</strong> ${staff['classes_' + lang] || staff.classes_ar || t.na[lang]}</p>
+                    </div>
+                    ${(staff['message_' + lang] || staff.message_ar) ? `
+                        <div class="mt-6 border-t pt-6">
+                             <h4 class="font-bold mb-2">${t.message[lang]}</h4>
+                            <p class="text-gray-700 italic">"${staff['message_' + lang] || staff.message_ar}"</p>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+            renderStaffList(staffId);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('current-year').textContent = new Date().getFullYear();
+            
+            const urlParams = new URLSearchParams(window.location.search);
+            const lang = urlParams.get('lang') || 'ar';
+            changeLanguage(lang);
+
+            const langButton = document.getElementById('lang-switcher-button');
+            const langMenu = document.getElementById('lang-switcher-menu');
+            langButton.addEventListener('click', (e) => {
+                e.stopPropagation();
+                langMenu.classList.toggle('hidden');
+            });
+            document.addEventListener('click', () => langMenu.classList.add('hidden'));
+
+            renderStaffList(1);
+            renderStaffDetails(1);
+        });
+    </script>
+</body>
+</html>

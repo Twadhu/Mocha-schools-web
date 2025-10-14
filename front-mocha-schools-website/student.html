@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title data-i18n="title">بوابة الطالب - لوحة التحكم</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    :root {
+      --brand-primary: #2563eb;
+      --brand-primary-dark: #1d4ed8;
+      --text-primary: #111827;
+      --text-secondary: #6b7280;
+      --bg-primary: #ffffff;
+      --bg-secondary: #f9fafb;
+      --border-color: #e5e7eb;
+      --sidebar-width: 240px;
+      --header-height: 64px;
+      --radius-md: 8px;
+      --radius-lg: 16px;
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+      --transition-speed: 0.3s;
+    }
+    .dark-mode { --brand-primary:#3b82f6; --brand-primary-dark:#2563eb; --text-primary:#f9fafb; --text-secondary:#9ca3af; --bg-primary:#111827; --bg-secondary:#1f2937; --border-color:#374151; }
+    *, *::before, *::after { box-sizing: border-box; }
+    body { margin:0; font-family:'Tajawal',system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif; background-color:var(--bg-secondary); color:var(--text-primary); transition: background-color var(--transition-speed), color var(--transition-speed); }
+    /* Sidebar */
+    .sidebar { position:fixed; top:0; right:0; height:100vh; width:var(--sidebar-width); background:var(--bg-primary); border-left:1px solid var(--border-color); display:flex; flex-direction:column; padding:24px 0; z-index:1001; transition:right var(--transition-speed) ease-in-out; }
+    .sidebar .logo { font-size:24px; font-weight:700; margin-bottom:32px; padding:0 24px; color:var(--brand-primary); }
+    .sidebar-nav { width:100%; display:flex; flex-direction:column; gap:8px; padding:0 16px; }
+    .sidebar-nav a { color:var(--text-secondary); text-decoration:none; font-size:16px; padding:12px 16px; border-radius:var(--radius-md); transition: background-color var(--transition-speed), color var(--transition-speed); display:flex; align-items:center; gap:12px; }
+    .sidebar-nav a i { width:20px; text-align:center; }
+    .sidebar-nav a.active, .sidebar-nav a:hover { background:var(--brand-primary); color:#fff; }
+    .sidebar-bottom { margin-top:auto; padding:16px; display:flex; flex-direction:column; gap:10px; }
+    .sidebar .dark-toggle, .sidebar .link-underline-white { background:var(--bg-secondary); color:var(--text-secondary); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:10px; font-size:15px; cursor:pointer; width:100%; text-align:center; transition: background-color var(--transition-speed), color var(--transition-speed); }
+    .sidebar .dark-toggle:hover, .sidebar .link-underline-white:hover { background-color:var(--brand-primary); color:#fff; border-color:var(--brand-primary); }
+    /* Header/Main */
+    .main-content { margin-right:var(--sidebar-width); transition: margin-right var(--transition-speed); }
+    .header { padding:0 24px; border-bottom:1px solid var(--border-color); background:var(--bg-primary); position:sticky; top:0; z-index:1000; height:var(--header-height); display:flex; align-items:center; }
+    .header h1 { margin:0; font-size:20px; }
+    @media (max-width:900px){ .sidebar{ right:calc(-1 * var(--sidebar-width)); } .sidebar.open{ right:0; box-shadow:-2px 0 12px #0002; } .main-content{ margin-right:0; } .menu-toggle{ display:block !important; } .sidebar-overlay{ position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.4); z-index:1000; opacity:0; visibility:hidden; transition:opacity var(--transition-speed);} .sidebar-overlay.open{ opacity:1; visibility:visible; } }
+    /* Components */
+    .container{ max-width:1200px; margin:0 auto; padding:24px; }
+    .grid{ display:grid; grid-template-columns: repeat(auto-fit, minmax(280px,1fr)); gap:24px; }
+    .card{ border:none; border-radius:var(--radius-lg); background:var(--bg-primary); padding:24px; box-shadow:var(--shadow-md); transition: all var(--transition-speed); }
+    .card:hover{ transform: translateY(-4px); box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1); }
+    .card h2,.card h3{ margin-top:0; color:var(--text-primary); }
+    .row{ display:flex; gap:12px; flex-wrap:wrap; align-items:flex-end; }
+    .spacer{ flex:1; }
+    .muted{ color:var(--text-secondary); font-size:14px; }
+    input,select,button{ padding:10px 14px; border:1px solid var(--border-color); background-color:var(--bg-primary); color:var(--text-primary); border-radius:var(--radius-md); font-size:14px; transition: border-color var(--transition-speed), box-shadow var(--transition-speed); }
+    input:focus,select:focus{ outline:none; border-color:var(--brand-primary); box-shadow:0 0 0 2px rgba(37,99,235,.2); }
+    button{ background:var(--brand-primary); color:#fff; border:none; cursor:pointer; }
+    button:hover{ background:var(--brand-primary-dark); }
+    table{ width:100%; border-collapse:collapse; }
+    th,td{ border-bottom:1px solid var(--border-color); padding:12px; text-align:right; font-size:14px; }
+    th{ background:var(--bg-secondary); color:var(--text-secondary); font-weight:600; text-transform:uppercase; font-size:12px; }
+    .menu-toggle{ display:none; background:none; border:none; color:var(--text-primary); font-size:20px; cursor:pointer; margin-left:16px; }
+    .service-card{ text-align:center; }
+    .service-icon{ font-size:32px; color:var(--brand-primary); margin-bottom:12px; }
+    .filter-bar{ display:flex; flex-wrap:wrap; gap:16px; align-items:flex-end; }
+    /* Utilities */
+    .mb-24{ margin-bottom:24px; }
+    .mt-24{ margin-top:24px; }
+    .mt-16{ margin-top:16px; }
+    .mt-8{ margin-top:8px; }
+    .mb-16{ margin-bottom:16px; }
+    .p-20{ padding:20px; }
+    .text-center{ text-align:center; }
+    .items-center{ align-items:center; }
+    .gap-24{ gap:24px; }
+    .text-secondary{ color:var(--text-secondary); }
+    .grid-auto-200{ grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+    .grid-2{ grid-template-columns: 1fr 1fr; }
+    .span-full{ grid-column:1 / -1; }
+    .btn-secondary{ background-color: var(--text-secondary); color:#fff; }
+    .btn-secondary:hover{ filter:brightness(0.92); }
+    .link-underline-white{ text-decoration:none; }
+  </style>
+</head>
+<body>
+  <noscript class="noscript-banner">يجب تفعيل الجافاسكربت. إذا لم يكن لديك حساب انتقل للصفحة الرئيسية واطلب حساباً.</noscript>
+
+  <div id="sidebar-overlay" class="sidebar-overlay"></div>
+  <nav class="sidebar" id="sidebar">
+    <div class="logo">🎓 بوابة الطالب</div>
+    <div class="sidebar-nav">
+      <a href="#" onclick="scrollToSection('main')" class="active"><i class="fas fa-home"></i>الرئيسية</a>
+      <a href="#" onclick="scrollToSection('services')"><i class="fas fa-th-large"></i>الخدمات</a>
+      <a href="#" onclick="scrollToSection('scheduleSection')"><i class="fas fa-calendar-alt"></i>الجدول</a>
+      <a href="#" onclick="scrollToSection('attendanceSection')"><i class="fas fa-user-check"></i>الحضور والغياب</a>
+      <a href="#" onclick="scrollToSection('grades')"><i class="fas fa-chart-line"></i>الدرجات</a>
+      <a href="#" onclick="scrollToSection('scholarships')"><i class="fas fa-graduation-cap"></i>المنح</a>
+    </div>
+    <div class="sidebar-bottom">
+      <button class="dark-toggle" onclick="toggleDarkMode()"><i class="fas fa-moon"></i><span id="dark-mode-text">الوضع الليلي</span></button>
+  <a href="mocha-schools.html" class="link-underline-white"><i class="fas fa-arrow-left"></i>عودة للموقع</a>
+    </div>
+  </nav>
+
+  <div class="main-content" id="main-content">
+    <header class="header">
+      <button class="menu-toggle" id="menu-toggle"><i class="fas fa-bars"></i></button>
+      <h1 data-i18n="header">لوحة التحكم</h1>
+      <div class="spacer"></div>
+    </header>
+
+    <main class="container" id="main">
+      <div class="card mb-24">
+        <h2 data-i18n="welcome_message">مرحباً بك، <span id="studentName"></span>!</h2>
+        <div class="row items-center gap-24 text-secondary">
+          <span><i class="fas fa-school"></i> <strong data-i18n="school_name">المدرسة:</strong> <span id="schoolName"></span></span>
+          <span><i class="fas fa-layer-group"></i> <strong data-i18n="grade_level">الصف:</strong> <span id="studentGrade"></span></span>
+        </div>
+      </div>
+
+      <section id="services">
+        <h2 class="mb-16">الخدمات السريعة</h2>
+        <div class="grid grid-auto-200">
+          <div class="card service-card" onclick="scrollToSection('scholarships')">
+            <i class="fas fa-graduation-cap service-icon"></i>
+            <h3 data-i18n="scholarships">المنح الدراسية</h3>
+            <p class="muted" data-i18n="scholarships_desc">تقدم للمنح المتاحة</p>
+          </div>
+          <div class="card service-card" onclick="scrollToSection('curriculumSection')">
+            <i class="fas fa-book service-icon"></i>
+            <h3 data-i18n="curriculum">المنهج الدراسي</h3>
+            <p class="muted" data-i18n="curriculum_desc">اطلع على المنهج</p>
+          </div>
+          <div class="card service-card" onclick="scrollToSection('scheduleSection')">
+            <i class="fas fa-calendar service-icon"></i>
+            <h3 data-i18n="schedule">الجدول المدرسي</h3>
+            <p class="muted" data-i18n="schedule_desc">عرض جدول الحصص</p>
+          </div>
+          <div class="card service-card" onclick="scrollToSection('coursesSection')">
+            <i class="fas fa-laptop-code service-icon"></i>
+            <h3>الكورسات</h3>
+            <p class="muted">تصفح الكورسات المتاحة</p>
+          </div>
+        </div>
+      </section>
+
+      <div class="card mt-24">
+        <h3>فلاتر البحث</h3>
+        <div class="filter-bar">
+          <div>
+            <label for="class_id" data-i18n="class_label">الصف</label><br>
+            <select id="class_id" aria-label="الصف"></select>
+          </div>
+          <div>
+            <label for="section_id" data-i18n="section_label">الشعبة</label><br>
+            <select id="section_id" aria-label="الشعبة"></select>
+          </div>
+          <button id="load" data-i18n="load_all_btn">تحميل البيانات</button>
+        </div>
+        <div class="muted mt-8" data-i18n="helper_text">اختر الصف والشعبة ثم اضغط تحميل لعرض الجدول والدرجات.</div>
+      </div>
+
+      <div class="grid grid-2 mt-24">
+        <section class="card span-full" id="scheduleSection">
+          <h3 data-i18n="timetable_title">الجدول الدراسي</h3>
+          <table>
+            <thead>
+              <tr><th data-i18n="day">اليوم</th><th data-i18n="period">الحصة</th><th data-i18n="subject">المادة</th><th data-i18n="teacher">المعلم</th></tr>
+            </thead>
+            <tbody id="timetable"><tr><td colspan="4" class="muted text-center p-20">الرجاء استخدام الفلاتر أعلاه لعرض الجدول.</td></tr></tbody>
+          </table>
+        </section>
+
+        <section class="card span-full" id="grades">
+          <h3 data-i18n="grades_title">الدرجات</h3>
+          <div class="row">
+            <label for="term" data-i18n="term_label">الفصل الدراسي:</label>
+            <select id="term" aria-label="الفصل الدراسي للدرجات"></select>
+            <button id="loadGrades" data-i18n="load_grades_btn">تحميل الدرجات</button>
+          </div>
+          <table class="grades-table mt-16">
+            <thead id="gradesHead"></thead>
+            <tbody id="gradesBody"><tr><td colspan="5" class="muted text-center p-20">الرجاء استخدام الفلاتر أعلاه لعرض الدرجات.</td></tr></tbody>
+          </table>
+        </section>
+      </div>
+
+      <section class="card mt-24" id="attendanceSection">
+        <h3 data-i18n="attendance">الحضور والغياب</h3>
+        <div class="row">
+          <div>
+            <label for="attFrom" data-i18n="from">من تاريخ</label><br>
+            <input type="date" id="attFrom" title="من" />
+          </div>
+          <div>
+            <label for="attTo" data-i18n="to">إلى تاريخ</label><br>
+            <input type="date" id="attTo" title="إلى" />
+          </div>
+          <button id="loadAttendance" data-i18n="load_attendance_btn">عرض السجل</button>
+          <button id="downloadAttendancePdf" class="btn-secondary">تحميل PDF</button>
+        </div>
+        <table class="mt-16">
+          <thead><tr><th data-i18n="date">التاريخ</th><th data-i18n="status">الحالة</th></tr></thead>
+          <tbody id="attendanceBody"><tr><td colspan="2" class="muted text-center p-20">حدد التواريخ لعرض سجل الحضور.</td></tr></tbody>
+        </table>
+        <div id="attendanceSummary" class="muted mt-8"></div>
+      </section>
+
+      <section class="card mt-24" id="curriculumSection">
+        <h3>المنهج الدراسي (الثانوية)</h3>
+        <div id="curriculumBox"></div>
+      </section>
+
+      <section class="card mt-24" id="coursesSection">
+        <h3>كورسات تعليمية</h3>
+        <div id="coursesGrid" class="grid"></div>
+      </section>
+
+      <section class="card mt-24" id="scholarships">
+        <h3 data-i18n="scholar_title">المنح المتاحة</h3>
+        <ul id="scholarshipsList"><li class="muted">جاري تحميل المنح...</li></ul>
+      </section>
+    </main>
+  </div>
+
+<script>
+// i18n
+const i18n = {
+  ar: { title:'بوابة الطالب - لوحة التحكم', header:'لوحة التحكم', school_name:'المدرسة:', grade_level:'الصف:', scholarships:'المنح الدراسية', scholarships_desc:'تقدم للمنح المتاحة', curriculum:'المنهج الدراسي', curriculum_desc:'اطلع على المنهج', schedule:'الجدول المدرسي', schedule_desc:'عرض جدول الحصص', class_label:'الصف', section_label:'الشعبة', load_all_btn:'تحميل البيانات', helper_text:'اختر الصف والشعبة ثم اضغط تحميل لعرض الجدول والدرجات.', timetable_title:'الجدول الدراسي', day:'اليوم', period:'الحصة', subject:'المادة', teacher:'المعلم', grades_title:'الدرجات', term_label:'الفصل الدراسي', load_grades_btn:'تحميل الدرجات', attendance:'الحضور والغياب', from:'من تاريخ', to:'إلى تاريخ', load_attendance_btn:'عرض السجل', date:'التاريخ', status:'الحالة', scholar_title:'المنح المتاحة', loading:'جاري التحميل...', load_error:'حدث خطأ في التحميل', no_data:'لا توجد بيانات', not_ready:'غير متاح', present:'حاضر', absent:'غائب', late:'متأخر' },
+  en: { title:'Student Portal - Dashboard', header:'Dashboard', school_name:'School:', grade_level:'Grade:', scholarships:'Scholarships', scholarships_desc:'Apply to available scholarships', curriculum:'Curriculum', curriculum_desc:'Browse curriculum', schedule:'Timetable', schedule_desc:'View class schedule', class_label:'Class', section_label:'Section', load_all_btn:'Load data', helper_text:'Choose class & section then click Load to show timetable and grades.', timetable_title:'Timetable', day:'Day', period:'Period', subject:'Subject', teacher:'Teacher', grades_title:'Grades', term_label:'Term', load_grades_btn:'Load grades', attendance:'Attendance', from:'From', to:'To', load_attendance_btn:'Load attendance', date:'Date', status:'Status', scholar_title:'Available Scholarships', loading:'Loading...', load_error:'Failed to load', no_data:'No data', not_ready:'Not available', present:'Present', absent:'Absent', late:'Late' }
+};
+const state = { lang: (document.documentElement.lang||'ar'), studentData: null };
+function applyI18n(){ const dict=i18n[state.lang]||i18n.ar; document.title=dict.title; document.querySelectorAll('[data-i18n]').forEach(el=>{ const k=el.getAttribute('data-i18n'); if(dict[k]!==undefined) el.textContent=dict[k]; }); }
+
+// Robust buildApiUrl (works inside subfolders)
+function buildApiUrl(path){
+  path = String(path||'').replace(/^\/+/, '');
+  const href = location.pathname;
+  const marker = 'front-mocha-schools-website';
+  let basePrefix = '../';
+  if(href.includes(marker)){
+    const after = href.split(marker)[1] || '';
+    const extraSegments = after.split('/').filter(s=> s.length>0 && s.indexOf('.')===-1);
+    basePrefix = '../'.repeat(1 + extraSegments.length);
+  }
+  return basePrefix + path;
+}
+
+// Sidebar toggle
+const sidebar = document.getElementById('sidebar');
+const sidebarOverlay = document.getElementById('sidebar-overlay');
+const menuToggle = document.getElementById('menu-toggle');
+function toggleSidebar(){ sidebar.classList.toggle('open'); sidebarOverlay.classList.toggle('open'); }
+menuToggle.addEventListener('click', toggleSidebar); sidebarOverlay.addEventListener('click', toggleSidebar);
+
+// Dark mode
+function toggleDarkMode(){ const isDark = document.body.classList.toggle('dark-mode'); document.getElementById('dark-mode-text').textContent = isDark ? 'الوضع النهاري' : 'الوضع الليلي'; localStorage.setItem('darkMode', isDark); }
+if(localStorage.getItem('darkMode')==='true'){ toggleDarkMode(); }
+
+// Smooth scroll + active link
+const navLinks = document.querySelectorAll('.sidebar-nav a');
+function scrollToSection(id){ const el=document.getElementById(id); if(el){ el.scrollIntoView({behavior:'smooth', block:'start'}); navLinks.forEach(a=>{ a.classList.remove('active'); if(a.getAttribute('onclick').includes(id)) a.classList.add('active'); }); if(window.innerWidth<=900) toggleSidebar(); }}
+window.scrollToSection = scrollToSection; window.toggleDarkMode = toggleDarkMode;
+
+// Loaders
+async function loadSchoolName(){ try{ const r = await fetch(buildApiUrl('api/schools.php')); const d = await r.json(); if(d.ok){ const s=(d.schools||[]).find(x=> x.id==(state.studentData?.school_id)); if(s) document.getElementById('schoolName').textContent = s.name; } }catch(e){ console.error('school fetch',e); }}
+
+async function loadTimetable(){
+  const class_id = document.getElementById('class_id').value || state.studentData?.grade_level;
+  const el = document.getElementById('timetable'); el.innerHTML = `<tr><td colspan=\"4\" class=\"muted text-center p-20\">${i18n[state.lang].loading}</td></tr>`;
+  try{
+    const r = await fetch(buildApiUrl(`api/schedule.php?grade=${encodeURIComponent(class_id)}&semester=1`), { headers:{ 'Authorization':'Bearer '+localStorage.getItem('authToken') }});
+    const data = await r.json(); if(!data.ok){ throw 0; }
+    const entries = data.items || [];
+  if(!entries.length){ el.innerHTML=`<tr><td colspan=\"4\" class=\"muted text-center p-20\">${i18n[state.lang].no_data}</td></tr>`; return; }
+    const dayNames = { Sat:'السبت', Sun:'الأحد', Mon:'الاثنين', Tue:'الثلاثاء', Wed:'الأربعاء', Thu:'الخميس' };
+    el.innerHTML = entries.sort((a,b)=> a.day.localeCompare(b.day) || a.period - b.period)
+      .map(r=>`<tr><td>${dayNames[r.day]||r.day}</td><td>${r.period}</td><td>${r.subject||''}</td><td>${r.teacher_name||''}</td></tr>`).join('');
+  }catch{ el.innerHTML=`<tr><td colspan=\"4\" class=\"muted text-center p-20\">${i18n[state.lang].load_error}</td></tr>`; }
+}
+
+async function loadGrades(){
+  const term = document.getElementById('term').value;
+  const tbody = document.getElementById('gradesBody'); const thead = document.getElementById('gradesHead');
+  tbody.innerHTML = `<tr><td colspan=\"5\" class=\"muted text-center\">${i18n[state.lang].loading}</td></tr>`;
+  try{
+    const r = await fetch(buildApiUrl(`api/student.php?path=grades${term?`&term=${encodeURIComponent(term)}`:''}`), { headers:{ 'Authorization':'Bearer '+localStorage.getItem('authToken') }});
+    const data = await r.json(); if(!data.ok){ throw 0; }
+    const rows = data.grades||[]; if(!rows.length){ tbody.innerHTML=`<tr><td colspan=\"5\" class=\"muted text-center\">${i18n[state.lang].no_data}</td></tr>`; return; }
+    const hasMonthly = rows.some(r => ('m1' in r) || ('m2' in r) || ('m3' in r));
+    if(hasMonthly){
+      thead.innerHTML = `<tr><th>${i18n[state.lang].subject}</th><th>${i18n[state.lang].m1||'شهر 1'}</th><th>${i18n[state.lang].m2||'شهر 2'}</th><th>${i18n[state.lang].m3||'شهر 3'}</th><th>${i18n[state.lang].term||'الفصل'}</th></tr>`;
+      tbody.innerHTML = rows.map(r=>`<tr><td>${r.subject_name||r.subject||''}</td><td>${r.m1 ?? ''}</td><td>${r.m2 ?? ''}</td><td>${r.m3 ?? ''}</td><td>${r.term ?? ''}</td></tr>`).join('');
+    }else{
+      thead.innerHTML = `<tr><th>${i18n[state.lang].subject}</th><th>${state.lang==='ar'?'الدرجة':'Grade'}</th><th>${i18n[state.lang].term||'الفصل'}</th><th>${state.lang==='ar'?'التاريخ':'Date'}</th></tr>`;
+      tbody.innerHTML = rows.map(r=>`<tr><td>${r.subject_name||r.subject||''}</td><td>${r.grade ?? r.score ?? ''}</td><td>${r.term ?? ''}</td><td>${(r.created_at||'').split('T')[0]}</td></tr>`).join('');
+    }
+  }catch{ tbody.innerHTML=`<tr><td colspan=\"5\" class=\"muted text-center\">${i18n[state.lang].load_error}</td></tr>`; }
+}
+
+async function loadAttendance(){
+  const from=document.getElementById('attFrom').value; const to=document.getElementById('attTo').value;
+  const qs = (from||to)?`?${from?`from=${from}`:''}${from&&to?'&':''}${to?`to=${to}`:''}`:'';
+  const tb=document.getElementById('attendanceBody'); tb.innerHTML=`<tr><td colspan=\"2\" class=\"muted text-center\">${i18n[state.lang].loading}</td></tr>`;
+  try{
+    const r = await fetch(buildApiUrl('api/student.php?path=attendance/me'+qs), { headers:{ 'Authorization':'Bearer '+localStorage.getItem('authToken') }});
+    const d = await r.json(); if(!d.ok) throw 0; if(!d.attendance.length){ tb.innerHTML=`<tr><td colspan=\"2\" class=\"muted text-center\">${i18n[state.lang].no_data}</td></tr>`; document.getElementById('attendanceSummary').textContent=''; return; }
+    const m={ present:i18n[state.lang].present||'حاضر', absent:i18n[state.lang].absent||'غائب', late:i18n[state.lang].late||'متأخر' };
+    tb.innerHTML = d.attendance.map(a=>`<tr><td>${a.date}</td><td>${m[a.status]||a.status}</td></tr>`).join('');
+    const sm=d.summary||{}; document.getElementById('attendanceSummary').textContent = `${m.present}: ${(sm.present||0)} | ${m.absent}: ${(sm.absent||0)} | ${m.late}: ${(sm.late||0)}`;
+  }catch{ tb.innerHTML=`<tr><td colspan=\"2\" class=\"muted text-center\">${i18n[state.lang].load_error}</td></tr>`; }
+}
+
+async function loadCurriculum(){
+  const grade = state.studentData?.grade_level || '3';
+  const box = document.getElementById('curriculumBox'); box.innerHTML = `<div class=\"muted\">${i18n[state.lang].loading}</div>`;
+  try{
+    const r = await fetch(buildApiUrl(`api/curriculum.php?grade=${encodeURIComponent(grade)}`), { headers:{ 'Authorization':'Bearer '+localStorage.getItem('authToken') }});
+    const data = await r.json(); if(!data.ok || data.level!=='highschool' || !data.subjects?.length){ box.innerHTML = `<div class=\"muted\">${i18n[state.lang].no_data}</div>`; return; }
+    box.innerHTML = data.subjects.map(subj=>{
+      const units = (subj.units||[]).map(u=>{
+        const lessons = (u.lessons||[]).map(l=>`<li>${l.title_ar||l.title_en||l.slug}</li>`).join('');
+        return `<div class=\"card\" style=\"padding:12px; margin-bottom:8px;\"><div class=\"period-subject\" style=\"font-weight:600;\">${u.title_ar||u.title_en}</div><ul style=\"margin:6px 0 0 0; padding-inline-start:18px;\">${lessons}</ul></div>`;
+      }).join('');
+      return `<div class=\"card\" style=\"background:var(--bg-secondary);\"><h3>${subj.name_ar||subj.name_en}</h3>${units || `<div class=\\\"muted\\\">${i18n[state.lang].not_ready}</div>`}</div>`;
+    }).join('');
+  }catch{ box.innerHTML = `<div class=\"muted\">${i18n[state.lang].load_error}</div>`; }
+}
+
+async function loadCourses(){
+  const grid = document.getElementById('coursesGrid'); grid.innerHTML = `<div class=\"muted\">${i18n[state.lang].loading}</div>`;
+  try{
+    const r = await fetch(buildApiUrl('api/courses/catalog?level=highschool'), { headers:{ 'Authorization':'Bearer '+localStorage.getItem('authToken') }});
+    const d = await r.json(); if(!d.ok || !d.courses?.length){ grid.innerHTML = `<div class=\"muted\">${i18n[state.lang].no_data}</div>`; return; }
+    grid.innerHTML = d.courses.map(c=>`
+      <div class=\"card service-card\">
+        <div class=\"service-icon\"><i class=\"fas fa-book-open\"></i></div>
+        <h3>${c.title_ar||c.title_en}</h3>
+        <p class=\"muted\">${state.lang==='ar'?'المدة:':'Hours:'} ${c.hours||0} ${state.lang==='ar'?'ساعة':'h'}</p>
+        <button onclick=\"enrollCourse('${c.id}')\">${state.lang==='ar'?'التسجيل':'Enroll'}</button>
+      </div>`).join('');
+  }catch{ grid.innerHTML = `<div class=\"muted\">${i18n[state.lang].load_error}</div>`; }
+}
+async function enrollCourse(id){
+  try{
+    const r = await fetch(buildApiUrl('api/courses/enroll'), { method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+localStorage.getItem('authToken')}, body: JSON.stringify({course_id:id}) });
+    const d = await r.json(); alert(d.ok ? (state.lang==='ar'?'تم تسجيلك في الكورس بنجاح':'Enrolled successfully') : (d.message || (state.lang==='ar'?'تعذّر التسجيل':'Failed to enroll')));
+  }catch{ alert(state.lang==='ar'?'تعذّر التسجيل':'Failed to enroll'); }
+}
+
+async function loadAvailableScholarships(){
+  const ul = document.getElementById('scholarshipsList'); ul.innerHTML = `<li class=\"muted\">${i18n[state.lang].loading}</li>`;
+  try{
+    const r = await fetch(buildApiUrl('api/student/available-scholarships'));
+    const d = await r.json(); if(!d.ok || !d.data?.length){ ul.innerHTML = `<li class=\"muted\">${i18n[state.lang].no_data}</li>`; return; }
+    ul.innerHTML = d.data.map(s=>`<li>${s.name} • ${s.country} ${s.link?`• <a href=\"${s.link}\" target=\"_blank\" rel=\"noopener\">${state.lang==='ar'?'رابط':'Link'}</a>`:''}</li>`).join('');
+  }catch{ ul.innerHTML = `<li class=\"muted\">${i18n[state.lang].load_error}</li>`; }
+}
+
+function populateStaticFilters(){
+  const classSelect=document.getElementById('class_id'); const sectionSelect=document.getElementById('section_id'); const termSelect=document.getElementById('term');
+  const classes={ '1':'الصف الأول', '2':'الصف الثاني', '3':'الصف الثالث الثانوي' };
+  const sections={ '1':'أ', '2':'ب', '3':'ج' };
+  const terms={ '':'الكل', 'الأول':'الفصل الأول', 'الثاني':'الفصل الثاني' };
+  classSelect.innerHTML = Object.entries(classes).map(([v,t])=>`<option value=\"${v}\">${t}</option>`).join('');
+  sectionSelect.innerHTML = Object.entries(sections).map(([v,t])=>`<option value=\"${v}\">${t}</option>`).join('');
+  termSelect.innerHTML = Object.entries(terms).map(([v,t])=>`<option value=\"${v}\">${t}</option>`).join('');
+  if(state.studentData?.grade_level){ const m={"الأول الثانوي":"1","الثاني الثانوي":"2","الثالث الثانوي":"3"}; const key=Object.keys(m).find(k=> state.studentData.grade_level.includes(k)); if(m[key]) classSelect.value=m[key]; }
+}
+
+// Init
+async function init(){
+  const user = localStorage.getItem('currentUser'); if(!user){ window.location.href='student-login.html'; return; }
+  state.studentData = JSON.parse(user);
+  document.getElementById('studentName').textContent = `${state.studentData.first_name||''} ${state.studentData.last_name||''}`;
+  document.getElementById('studentGrade').textContent = state.studentData.grade_level || 'غير محدد';
+  await loadSchoolName();
+  populateStaticFilters();
+  loadAvailableScholarships();
+  loadCurriculum();
+  loadCourses();
+}
+
+document.addEventListener('DOMContentLoaded', ()=>{
+  applyI18n();
+  document.getElementById('load').addEventListener('click', ()=>{ loadTimetable(); loadGrades(); });
+  document.getElementById('loadGrades').addEventListener('click', loadGrades);
+  document.getElementById('loadAttendance').addEventListener('click', loadAttendance);
+  document.getElementById('downloadAttendancePdf').addEventListener('click', ()=>{
+    const from=document.getElementById('attFrom').value; const to=document.getElementById('attTo').value;
+    const qs = (from||to)?`?${from?`from=${from}`:''}${from&&to?'&':''}${to?`to=${to}`:''}`:'';
+    window.open(buildApiUrl('api/reports/attendance.pdf.php')+qs,'_blank');
+  });
+  init();
+});
+</script>
+</body>
+</html>
+ 
+
