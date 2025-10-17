@@ -19,6 +19,18 @@ switch ($action) {
         $user = $stmt->fetch();
         send_json(['ok'=>true,'data'=>$user]);
     }
+    case 'attendance': {
+        if ($method !== 'GET') send_json(['ok'=>false,'error'=>'method_not_allowed'], 405);
+        $from = $_GET['from'] ?? null; $to = $_GET['to'] ?? null;
+        $sql = "SELECT a.date AS att_date, u.first_name, u.last_name, a.status FROM attendance a JOIN users u ON u.id=a.student_id WHERE 1=1";
+        $args = [];
+        if (!empty($from)) { $sql .= " AND a.date >= ?"; $args[] = $from; }
+        if (!empty($to)) { $sql .= " AND a.date <= ?"; $args[] = $to; }
+        $sql .= " ORDER BY a.date DESC, u.first_name";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($args);
+        send_json(['ok'=>true,'items'=>$stmt->fetchAll(PDO::FETCH_ASSOC)]);
+    }
     case 'report_requests': {
         // View directorate report requests for awareness
         try {
