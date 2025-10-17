@@ -136,7 +136,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   `id` varchar(20) NOT NULL,
   `email` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
-  `type` enum('student','teacher') NOT NULL,
+  `type` enum('student','teacher','director') NOT NULL,
   `first_name` varchar(100) NOT NULL,
   `last_name` varchar(100) NOT NULL,
   `avatar_url` text DEFAULT NULL,
@@ -155,5 +155,42 @@ INSERT INTO `users` (`id`,`email`,`password`,`type`,`first_name`,`last_name`,`av
 ('STU12347','khalid@school.com',@DEMO_HASH,'student','خالد','عبدالله','https://placehold.co/128x128/F97316/FFFFFF?text=K','C2','{"school":"مدرسة المستقبل الثانوية"}'),
 ('TCH98765','teacher@school.com',@DEMO_HASH,'teacher','فاطمة','الزهراء','https://placehold.co/128x128/0EA5E9/FFFFFF?text=F',NULL,'{"phone":"+966 55 555 1234","email":"teacher@school.com","office":"B-102","mainSubject":"الرياضيات"}'),
 ('TCH98766','y.hassan@school.com',@DEMO_HASH,'teacher','يوسف','حسن','https://placehold.co/128x128/10B981/FFFFFF?text=Y',NULL,'{"phone":"+966 55 555 5678","email":"y.hassan@school.com","office":"C-201","mainSubject":"الفيزياء"}');
+
+-- Optional: Directorate role user (password: password123) seeded if absent
+INSERT INTO users (id, email, password, type, first_name, last_name)
+SELECT 'DIR10001', 'director@office.com', @DEMO_HASH, 'director', 'Edu', 'Director'
+WHERE NOT EXISTS (SELECT 1 FROM users WHERE email='director@office.com');
+
+-- Optional tables for Directorate; non-breaking additions
+CREATE TABLE IF NOT EXISTS schools (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  code VARCHAR(64) NOT NULL UNIQUE,
+  director_name VARCHAR(255) NULL,
+  phone VARCHAR(64) NULL,
+  email VARCHAR(255) NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS report_requests (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  requested_by VARCHAR(20) NOT NULL,
+  type VARCHAR(128) NOT NULL,
+  params JSON NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (requested_by) REFERENCES users(id)
+);
+
+CREATE TABLE IF NOT EXISTS report_submissions (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  request_id INT NOT NULL,
+  school_id INT NOT NULL,
+  submitted_by VARCHAR(20) NOT NULL,
+  data JSON NULL,
+  submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (request_id) REFERENCES report_requests(id),
+  FOREIGN KEY (school_id) REFERENCES schools(id),
+  FOREIGN KEY (submitted_by) REFERENCES users(id)
+);
 
 COMMIT;

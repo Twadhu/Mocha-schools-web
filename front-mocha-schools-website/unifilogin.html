@@ -39,6 +39,7 @@
         <div class="flex border-b">
             <button id="student-tab" class="tab-btn flex-1 p-3 text-gray-500 border-b-2 border-transparent active">طالب</button>
             <button id="teacher-tab" class="tab-btn flex-1 p-3 text-gray-500 border-b-2 border-transparent">معلم</button>
+            <button id="director-tab" class="tab-btn flex-1 p-3 text-gray-500 border-b-2 border-transparent">المديرية</button>
         </div>
 
         <form id="login-form" class="space-y-6">
@@ -65,6 +66,7 @@
             <p>للتجربة:</p>
             <p>بريد الطالب: <strong>student@school.com</strong></p>
             <p>بريد المعلم: <strong>teacher@school.com</strong></p>
+            <p>بريد المديرية: <strong>director@office.com</strong></p>
             <p>كلمة المرور للجميع: <strong>password123</strong></p>
         </div>
     </div>
@@ -77,6 +79,7 @@
             const form = document.getElementById('login-form');
             const emailInput = document.getElementById('email');
             const msgDiv = document.getElementById('msg');
+            const directorTab = document.getElementById('director-tab');
 
             function buildApiUrl(path){
                 path = String(path||'').replace(/^\/+/, '');
@@ -96,18 +99,27 @@
                 if (role === 'student') {
                     studentTab.classList.add('active');
                     teacherTab.classList.remove('active');
+                    if (directorTab) directorTab.classList.remove('active');
                     roleInput.value = 'student';
                     emailInput.placeholder = 'student@school.com';
-                } else {
+                } else if (role === 'teacher') {
                     teacherTab.classList.add('active');
                     studentTab.classList.remove('active');
+                    if (directorTab) directorTab.classList.remove('active');
                     roleInput.value = 'teacher';
                     emailInput.placeholder = 'teacher@school.com';
+                } else {
+                    if (directorTab) directorTab.classList.add('active');
+                    studentTab.classList.remove('active');
+                    teacherTab.classList.remove('active');
+                    roleInput.value = 'director';
+                    emailInput.placeholder = 'director@office.com';
                 }
             }
 
             studentTab.addEventListener('click', () => switchTab('student'));
             teacherTab.addEventListener('click', () => switchTab('teacher'));
+            if (directorTab) directorTab.addEventListener('click', () => switchTab('director'));
 
             form.addEventListener('submit', async (e) => {
                 e.preventDefault();
@@ -136,7 +148,9 @@
                     localStorage.setItem('currentUser', JSON.stringify(data.user));
                     msgDiv.textContent = 'تم تسجيل الدخول بنجاح. جاري التوجيه...';
                     msgDiv.className = 'text-center text-sm p-2 rounded-md bg-green-100 text-green-800';
-                    setTimeout(()=> window.location.href = 'portal.html', 600);
+                    const roleNow = (data.user && data.user.type) || role;
+                    const dest = roleNow === 'director' ? 'directorate.html' : 'portal.html';
+                    setTimeout(()=> window.location.href = dest, 600);
                 } catch(err){
                     msgDiv.textContent = err.message || 'فشل تسجيل الدخول';
                     msgDiv.className = 'text-center text-sm p-2 rounded-md bg-red-100 text-red-800';
