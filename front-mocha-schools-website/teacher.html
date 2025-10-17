@@ -386,8 +386,20 @@
     document.getElementById('markAllPresent').addEventListener('click', ()=>{ attList.querySelectorAll('select[data-status]').forEach(s=> s.value='present'); });
   window.saveAttendance = async (sid)=>{ const row = attList.querySelector(`tr[data-id='${sid}']`); const status = row.querySelector('select[data-status]').value; try { const r= await apiFetch('api/attendance.php',{ method:'POST', headers: auth(), body: JSON.stringify({ student_id:sid, status }) }); const d= await r.json(); if(d.ok){ attendanceMsg.textContent='تم الحفظ'; attendanceMsg.className='msg ok'; } else { attendanceMsg.textContent='فشل'; attendanceMsg.className='msg error'; } } catch { attendanceMsg.textContent='خطأ'; attendanceMsg.className='msg error'; } attendanceMsg.style.display='block'; };
 
-    document.getElementById('downloadAttPdf').addEventListener('click', ()=>{
-  const f=attFromT.value; const t=attToT.value; const qs=(f||t)?`?${f?`from=${f}`:''}${f&&t?'&':''}${t?`to=${t}`:''}`:''; window.open(buildApiUrl('api/reports/attendance.pdf.php')+qs,'_blank');
+    document.getElementById('downloadAttPdf').addEventListener('click', async ()=>{
+      const f=attFromT.value; const t=attToT.value; const qs=(f||t)?`&${f?`from=${encodeURIComponent(f)}`:''}${f&&t?'&':''}${t?`to=${encodeURIComponent(t)}`:''}`:'';
+      const url = buildApiUrl(`api/api.php?action=attendance_report${qs}`);
+      try {
+        const token = localStorage.getItem('authToken');
+        const res = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
+        if(!res.ok) throw new Error('خطأ أثناء توليد التقرير');
+        const blob = await res.blob();
+        const dl = document.createElement('a');
+        dl.href = URL.createObjectURL(blob);
+        dl.download = 'attendance.csv';
+        document.body.appendChild(dl); dl.click(); dl.remove();
+        setTimeout(()=> URL.revokeObjectURL(dl.href), 1000);
+      } catch { showToast('فشل تنزيل التقرير','error'); }
     });
   </script>
 </body>

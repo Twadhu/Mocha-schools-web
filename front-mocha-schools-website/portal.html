@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>بوابة المدرسة</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Tajawal', sans-serif; }
+        .sidebar { transition: transform 0.3s ease-in-out; }
+        .main-content { transition: margin-right 0.3s ease-in-out; }
+        .sidebar-link.active { background-color: #2563eb; color: white; }
+        .sidebar-link.active i { color: white; }
+        @media (min-width: 768px) { .main-content { margin-right: 260px; } }
+        @media (max-width: 767px) { .sidebar { transform: translateX(260px); } .sidebar.open { transform: translateX(0); } }
+        .view { display: none; }
+        .view.active { display: block; animation: fadeIn 0.5s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; opacity: 0; transition: all 0.3s ease; }
+        .toast.show { top: 40px; opacity: 1; }
+    .modal-overlay { position: fixed; inset: 0; background-color: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; z-index: 1000; -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); animation: fadeInModal 0.3s; }
+        .modal-box { transform: scale(0.95); opacity: 0; transition: all 0.2s ease-in-out; }
+        .modal-overlay.flex .modal-box { transform: scale(1); opacity: 1; }
+        @keyframes fadeInModal { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+<body class="bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-200">
+
+    <div id="toast-notification" class="toast p-3 rounded-lg text-white shadow-lg"></div>
+
+    <aside id="sidebar" class="fixed top-0 right-0 h-full w-[260px] bg-white dark:bg-slate-800 shadow-lg z-40">
+        <div id="sidebar-content" class="flex flex-col h-full p-4"></div>
+    </aside>
+
+    <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden md:hidden"></div>
+
+    <div class="main-content" id="main-content">
+        <header class="sticky top-0 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm shadow-sm z-20 h-16">
+            <div class="flex items-center justify-between h-full px-6">
+                <button id="menu-toggle" class="md:hidden text-2xl"><i class="fas fa-bars"></i></button>
+                <h1 id="header-title" class="text-xl font-semibold"></h1>
+                <div class="flex items-center gap-x-4">
+                    <button id="dark-mode-toggle" class="text-xl"><i class="fas fa-moon"></i></button>
+                    <div class="flex items-center gap-x-2">
+                        <img id="profile-avatar" src="" alt="Avatar" class="w-10 h-10 rounded-full object-cover">
+                        <div>
+                            <p id="profile-name" class="font-semibold text-sm"></p>
+                            <p id="profile-role" class="text-xs text-slate-500"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <main id="app-container" class="p-6"></main>
+    </div>
+
+    <template id="student-dashboard-template">
+        <div class="view" id="student-dashboard-view">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                <div class="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-md flex items-center gap-4"><i class="fas fa-clipboard-check text-3xl text-green-500"></i><div><p class="text-slate-500">متوسط الحضور</p><p class="text-2xl font-bold" id="attendance-stat">--%</p></div></div>
+                <div class="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-md flex items-center gap-4"><i class="fas fa-graduation-cap text-3xl text-blue-500"></i><div><p class="text-slate-500">المعدل التراكمي</p><p class="text-2xl font-bold" id="gpa-stat">--</p></div></div>
+                <div class="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-md flex items-center gap-4"><i class="fas fa-book-open text-3xl text-yellow-500"></i><div><p class="text-slate-500">الواجبات المطلوبة</p><p class="text-2xl font-bold" id="pending-assignments-stat">--</p></div></div>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="lg:col-span-2 space-y-6">
+                    <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-md"><h3 class="text-lg font-semibold mb-4">واجبات قادمة</h3><div id="upcoming-assignments" class="space-y-3"></div></div>
+                    <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-md"><h3 class="text-lg font-semibold mb-4">جدول اليوم</h3><div id="today-schedule" class="space-y-3"></div></div>
+                </div>
+                <div class="space-y-6">
+                    <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-md"><h3 class="text-lg font-semibold mb-4">أداء المواد</h3><div class="h-48"><canvas id="grades-chart"></canvas></div></div>
+                    <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-md"><h3 class="text-lg font-semibold mb-4">آخر الإعلانات</h3><div id="latest-announcements" class="space-y-3 max-h-48 overflow-y-auto"></div></div>
+                </div>
+            </div>
+        </div>
+    </template>
+    <template id="student-assignments-template">
+        <div class="view" id="student-assignments-view"><div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-md"><h3 class="text-xl font-semibold mb-4">الواجبات والاختبارات</h3><div class="overflow-x-auto"><table class="w-full text-sm text-right"><thead class="bg-slate-100 dark:bg-slate-700"><tr><th class="p-3">المادة</th><th class="p-3">العنوان</th><th class="p-3">النوع</th><th class="p-3">تاريخ التسليم</th><th class="p-3">الحالة</th><th class="p-3">الإجراء</th></tr></thead><tbody id="assignments-table-body"></tbody></table></div></div></div>
+    </template>
+    <template id="student-grades-template">
+        <div class="view" id="student-grades-view"><div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-md"><h3 class="text-xl font-semibold mb-4">سجل الدرجات</h3><div class="overflow-x-auto"><table class="w-full text-sm text-right"><thead class="bg-slate-100 dark:bg-slate-700"><tr><th class="p-3">المادة</th><th class="p-3">الواجب/الاختبار</th><th class="p-3">الدرجة</th><th class="p-3">التقدير</th></tr></thead><tbody id="grades-table-body"></tbody></table></div></div></div>
+    </template>
+    <template id="student-schedule-template">
+        <div class="view" id="student-schedule-view"><div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-md"><h3 class="text-xl font-semibold mb-4">الجدول الدراسي الأسبوعي</h3><div id="schedule-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4"></div></div></div>
+    </template>
+    <template id="student-attendance-template">
+        <div class="view" id="student-attendance-view"><div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-md"><h3 class="text-xl font-semibold mb-4">سجل الحضور والغياب</h3><div class="overflow-x-auto"><table class="w-full text-sm text-right"><thead class="bg-slate-100 dark:bg-slate-700"><tr><th class="p-3">التاريخ</th><th class="p-3">الحالة</th></tr></thead><tbody id="attendance-table-body"></tbody></table></div></div></div>
+    </template>
+    <template id="student-materials-template">
+        <div class="view" id="student-materials-view"><div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-md"><h3 class="text-xl font-semibold mb-4">المواد التعليمية</h3><div id="materials-container" class="space-y-3"></div></div></div>
+    </template>
+    <template id="student-events-template">
+        <div class="view" id="student-events-view"><div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-md"><h3 class="text-xl font-semibold mb-4">التقويم والأحداث المدرسية</h3><div id="events-container" class="space-y-4"></div></div></div>
+    </template>
+
+
+    <template id="teacher-dashboard-template">
+        <div class="view" id="teacher-dashboard-view">
+             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="lg:col-span-2 space-y-6">
+                    <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-md"><h3 class="text-lg font-semibold mb-4">حصص اليوم</h3><div id="today-schedule" class="space-y-3"></div></div>
+                    <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-md"><h3 class="text-lg font-semibold mb-4">واجبات تحتاج للتصحيح</h3><div id="assignments-to-grade" class="space-y-3"></div></div>
+                </div>
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-md"><h3 class="text-lg font-semibold mb-4">إرسال إعلان سريع</h3><form id="announcement-form" class="space-y-3"><textarea id="announcement-content" rows="6" class="w-full bg-slate-100 dark:bg-slate-700 p-2 rounded-md" placeholder="اكتب إعلانك لجميع طلابك هنا..."></textarea><button type="submit" class="w-full bg-sky-600 text-white px-4 py-2 rounded-md hover:bg-sky-700 transition">إرسال</button></form></div>
+            </div>
+        </div>
+    </template>
+    <template id="teacher-classes-template">
+         <div class="view" id="teacher-classes-view">
+            <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-md"><h3 class="text-xl font-semibold mb-4">فصولي الدراسية</h3><div id="classes-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div></div>
+             <div id="student-list-container" class="mt-6"></div>
+        </div>
+    </template>
+     <template id="teacher-assignments-template">
+        <div class="view" id="teacher-assignments-view">
+            <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-md">
+                <div class="flex justify-between items-center mb-4"><h3 class="text-xl font-semibold">الواجبات والاختبارات</h3><button id="add-assignment-btn" class="bg-sky-600 text-white px-4 py-2 rounded-md hover:bg-sky-700 transition"><i class="fas fa-plus mr-2"></i>إضافة جديد</button></div>
+                <div class="overflow-x-auto"><table class="w-full text-sm text-right"><thead class="bg-slate-100 dark:bg-slate-700"><tr><th class="p-3">العنوان</th><th class="p-3">الفصل</th><th class="p-3">تاريخ التسليم</th><th class="p-3">التسليمات</th><th class="p-3">الإجراءات</th></tr></thead><tbody id="assignments-table-body"></tbody></table></div>
+            </div>
+        </div>
+    </template>
+    <template id="teacher-grades-template">
+        <div class="view" id="teacher-grades-view">
+            <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-md">
+                <h3 class="text-xl font-semibold mb-4">رصد درجات التسليمات</h3>
+                <div class="flex flex-wrap gap-4 items-end mb-4"><div class="flex-grow"><label class="text-sm">اختر الواجب/الاختبار:</label><select id="grade-assignment-select" class="w-full mt-1 bg-slate-100 dark:bg-slate-700 p-2 rounded-md"></select></div></div>
+                <div class="overflow-x-auto"><table class="w-full text-sm text-right"><thead class="bg-slate-100 dark:bg-slate-700"><tr><th class="p-3">اسم الطالب</th><th class="p-3">حالة التسليم</th><th class="p-3">الدرجة</th><th class="p-3">حفظ</th></tr></thead><tbody id="grading-table-body"></tbody></table></div>
+            </div>
+        </div>
+    </template>
+    <template id="teacher-attendance-template">
+        <div class="view" id="teacher-attendance-view">
+             <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-md">
+                <h3 class="text-xl font-semibold mb-4">تسجيل الحضور والغياب</h3>
+                <div class="flex flex-wrap gap-4 items-end mb-4">
+                    <div class="flex-grow"><label class="text-sm">اختر الفصل:</label><select id="att-class-select" class="w-full mt-1 bg-slate-100 dark:bg-slate-700 p-2 rounded-md"></select></div>
+                    <div class="flex-grow"><label class="text-sm">التاريخ:</label><input type="date" id="att-date-select" class="w-full mt-1 bg-slate-100 dark:bg-slate-700 p-2 rounded-md"></div>
+                </div>
+                <div class="overflow-x-auto"><table class="w-full text-sm text-right"><thead class="bg-slate-100 dark:bg-slate-700"><tr><th class="p-3">اسم الطالب</th><th class="p-3 text-center">الحالة</th></tr></thead><tbody id="attendance-table-body"></tbody></table></div>
+                 <button id="save-attendance-btn" class="hidden mt-4 bg-sky-600 text-white px-4 py-2 rounded-md hover:bg-sky-700 transition">حفظ سجل الحضور</button>
+            </div>
+        </div>
+    </template>
+    <template id="teacher-materials-template">
+        <div class="view" id="teacher-materials-view">
+            <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-md">
+                <div class="flex justify-between items-center mb-4"><h3 class="text-xl font-semibold">المواد التعليمية</h3><button id="add-material-btn" class="bg-sky-600 text-white px-4 py-2 rounded-md hover:bg-sky-700 transition"><i class="fas fa-plus mr-2"></i>إضافة مادة</button></div>
+                <div class="overflow-x-auto"><table class="w-full text-sm text-right"><thead class="bg-slate-100 dark:bg-slate-700"><tr><th class="p-3">العنوان</th><th class="p-3">النوع</th><th class="p-3">الفصل</th><th class="p-3">التاريخ</th><th class="p-3">الإجراءات</th></tr></thead><tbody id="materials-table-body"></tbody></table></div>
+            </div>
+        </div>
+    </template>
+
+    <template id="profile-template">
+        <div class="view" id="profile-view">
+            <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-md max-w-2xl mx-auto">
+                <div class="flex flex-col sm:flex-row items-center gap-6 border-b dark:border-slate-700 pb-6 mb-6">
+                    <img id="profile-page-avatar" class="w-32 h-32 rounded-full ring-4 ring-offset-4 dark:ring-offset-slate-800 ring-blue-500">
+                    <div><h3 id="profile-page-name" class="text-2xl font-bold"></h3><p id="profile-page-role" class="text-slate-500"></p></div>
+                </div>
+                <div id="profile-details" class="space-y-4"></div>
+            </div>
+        </div>
+    </template>
+
+    <div id="assignment-modal" class="modal-overlay"><div class="modal-box bg-white dark:bg-slate-800 p-8 rounded-lg w-full max-w-md"><h3 id="modal-title" class="text-xl font-semibold mb-4"></h3><form id="assignment-form" class="space-y-4"><input type="hidden" id="assignment-id"><div><label>العنوان</label><input type="text" id="assignment-title" class="w-full mt-1 bg-slate-100 dark:bg-slate-700 p-2 rounded-md" required></div><div><label>النوع</label><select id="assignment-type" class="w-full mt-1 bg-slate-100 dark:bg-slate-700 p-2 rounded-md"><option value="واجب">واجب</option><option value="اختبار">اختبار</option></select></div><div><label>الفصل</label><select id="assignment-class" class="w-full mt-1 bg-slate-100 dark:bg-slate-700 p-2 rounded-md"></select></div><div><label>تاريخ التسليم</label><input type="date" id="assignment-due-date" class="w-full mt-1 bg-slate-100 dark:bg-slate-700 p-2 rounded-md" required></div><div class="flex justify-end gap-4 pt-4"><button type="button" class="cancel-modal-btn px-4 py-2 rounded-md bg-slate-200 dark:bg-slate-600 hover:bg-slate-300 dark:hover:bg-slate-500 transition">إلغاء</button><button type="submit" class="px-4 py-2 rounded-md bg-sky-600 text-white hover:bg-sky-700 transition">حفظ</button></div></form></div></div>
+    <div id="material-modal" class="modal-overlay"><div class="modal-box bg-white dark:bg-slate-800 p-8 rounded-lg w-full max-w-md"><h3 class="text-xl font-semibold mb-4">إضافة مادة تعليمية</h3><form id="material-form" class="space-y-4"><div><label>العنوان</label><input type="text" id="material-title" class="w-full mt-1 bg-slate-100 dark:bg-slate-700 p-2 rounded-md" required></div><div><label>النوع</label><select id="material-type" class="w-full mt-1 bg-slate-100 dark:bg-slate-700 p-2 rounded-md"><option value="pdf">ملف PDF</option><option value="video">رابط فيديو</option><option value="link">رابط خارجي</option></select></div><div><label>الفصل</label><select id="material-class" class="w-full mt-1 bg-slate-100 dark:bg-slate-700 p-2 rounded-md"></select></div><div><label>الرابط</label><input type="url" id="material-url" class="w-full mt-1 bg-slate-100 dark:bg-slate-700 p-2 rounded-md" placeholder="https://example.com" required></div><div class="flex justify-end gap-4 pt-4"><button type="button" class="cancel-modal-btn px-4 py-2 rounded-md bg-slate-200 dark:bg-slate-600 hover:bg-slate-300 dark:hover:bg-slate-500 transition">إلغاء</button><button type="submit" class="px-4 py-2 rounded-md bg-sky-600 text-white hover:bg-sky-700 transition">إضافة</button></div></form></div></div>
+
+        <!-- Replaced mock-backend with real API wrapper using JWT token -->
+        <script>
+            const API = {
+                base(path){
+                    path = String(path||'').replace(/^\/+/, '');
+                    const href = location.pathname; const marker = 'front-mocha-schools-website'; let basePrefix = '../';
+                    if(href.includes(marker)){
+                        const after = href.split(marker)[1] || ''; const extraSegments = after.split('/').filter(s=>s.length>0 && s.indexOf('.')===-1);
+                        basePrefix = '../'.repeat(1 + extraSegments.length);
+                    }
+                    return basePrefix + path;
+                },
+                async req(path, opts={}){
+                    const token = localStorage.getItem('authToken');
+                    const headers = Object.assign({ 'Accept':'application/json' }, opts.headers||{});
+                    if(token) headers['Authorization'] = 'Bearer ' + token;
+                    const res = await fetch(API.base(path), { ...opts, headers });
+                    if(res.status===401){
+                        // expired token -> back to unified login
+                        window.location.href = 'unifilogin.html?expired=1';
+                        throw new Error('UNAUTHORIZED');
+                    }
+                    const data = await res.json().catch(()=>null);
+                    return { res, data };
+                },
+                // Student endpoints
+                async student(action){ return API.req(`api/api.php?action=${action}`); },
+                async teacher(action){ return API.req(`api/api.php?action=${action}`); },
+            };
+            // Bridge object to keep existing calls structure with minimal edits
+            const mockAPI = {
+                async getUser(){
+                    // role will be inferred from token; both routes share same endpoint name
+                    const { data } = await API.req('api/api.php?action=getUser');
+                    return { ok: data && data.ok, data: data && data.data };
+                },
+                // Student
+                async getStudentDashboard(){ const { data } = await API.student('dashboard'); return { ok:data&&data.ok, data:data&&data.data } },
+                async getStudentAssignments(){ const { data } = await API.student('assignments'); return { ok:data&&data.ok, data:data&&data.data } },
+                async getStudentGrades(){ const { data } = await API.student('grades'); return { ok:data&&data.ok, data:data&&data.data } },
+                async getStudentSchedule(){ const { data } = await API.student('schedule'); return { ok:data&&data.ok, data:data&&data.data } },
+                async getStudentAttendance(){ const { data } = await API.student('attendance'); return { ok:data&&data.ok, data:data&&data.data } },
+                async getStudentMaterials(){ const { data } = await API.student('materials'); return { ok:data&&data.ok, data:data&&data.data } },
+                async getSchoolEvents(){ const { data } = await API.student('events'); return { ok:data&&data.ok, data:data&&data.data } },
+                async submitAssignment(_uid, assignmentId){ await API.req('api/api.php?action=submit_assignment', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ assignmentId }) }); return { ok:true }; },
+                // Teacher
+                async getTeacherDashboard(){
+                    // assemble from schedule + assignments counts
+                    const [sched, assigns] = await Promise.all([
+                        API.teacher('schedule'), API.teacher('assignments')
+                    ]);
+                    const today = new Date().toLocaleDateString('ar-EG-u-nu-latn', { weekday: 'long' });
+                    const scheduleByDay = {};
+                    if(sched.data && sched.data.items){
+                        sched.data.items.forEach(it=>{ (scheduleByDay[it.day] ||= []).push({ class: it.class_name, subject: it.subject }) });
+                    }
+                    const assignmentsToGrade = [];
+                    if(assigns.data && assigns.data.data){
+                        assigns.data.data.forEach(a=>{
+                            const pending = (parseInt(a.submissionCount||0) - parseInt(a.gradedCount||0));
+                            if(pending>0){ assignmentsToGrade.push({ assignment:{ id:a.id, title:a.title }, student:{ firstName:'', lastName:'' } }); }
+                        });
+                    }
+                    return { ok:true, data:{ schedule: scheduleByDay, assignmentsToGrade } };
+                },
+                async getTeacherClasses(){ const { data } = await API.teacher('classes'); return { ok:data&&data.ok, data:data&&data.data } },
+                async getStudentsByClass(classId){ const { data } = await API.teacher(`students&classId=${encodeURIComponent(classId)}`); return { ok:data&&data.ok, data:data&&data.data } },
+                async getTeacherAssignments(){ const { data } = await API.teacher('assignments'); return { ok:data&&data.ok, data:data&&data.data } },
+                async deleteAssignment(id){ await API.teacher(`delete_assignment&id=${encodeURIComponent(id)}`); return { ok:true } },
+                async saveAssignment(form){ const { data } = await API.teacher('save_assignment', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(form) }); return { ok:data&&data.ok } },
+                async getSubmissionsForAssignment(assignmentId){ const { data } = await API.teacher(`submissions&assignmentId=${encodeURIComponent(assignmentId)}`); if(!(data&&data.ok)) return { ok:false, data:[] }; return { ok:true, data: (data.data||[]).map(r=>({ student:{ id:r.student_id, firstName:r.full_name.split(' ')[0], lastName:r.full_name.split(' ').slice(1).join(' ') }, submission: r.status?{ status:r.status, grade:r.grade }:null })) } },
+                async saveGrade(studentId, assignmentId, grade){ await API.teacher('grade', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ student_id:studentId, assignmentId, grade }) }); return { ok:true } },
+                async getAttendanceForClass(date, classId){ const { data } = await API.teacher(`attendance&date=${encodeURIComponent(date)}&classId=${encodeURIComponent(classId)}`); if(!(data&&data.ok)) return { ok:false, data:[] }; return { ok:true, data: (data.data||[]).map(r=>({ student:{ id:r.student_id, firstName:r.full_name.split(' ')[0], lastName:r.full_name.split(' ').slice(1).join(' ') }, status:r.status })) } },
+                async saveAttendance(date, map){ const items = Object.entries(map).map(([student_id,status])=>({student_id, status})); await API.teacher('attendance', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ date, items }) }); return { ok:true } },
+                async getMaterialsByTeacher(){ const { data } = await API.teacher('materials'); return { ok:data&&data.ok, data:data&&data.data } },
+                async addMaterial(form){ await API.teacher('materials', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(form) }); return { ok:true } },
+                async deleteMaterial(id){ await API.teacher(`materials&id=${encodeURIComponent(id)}`, { method:'DELETE' }); return { ok:true } },
+                async sendAnnouncement(_tid, content){ await API.teacher('announce', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ content }) }); return { ok:true } },
+            };
+        </script>
+    <script>
+        // ===================================================================================
+        // UNIFIED SCHOOL PORTAL SPA - APPLICATION LOGIC (V2)
+        // ===================================================================================
+        document.addEventListener('DOMContentLoaded', () => {
+            const App = {
+                user: null, role: null, gradesChart: null,
+                elements: {
+                    sidebar: document.getElementById('sidebar'), sidebarContent: document.getElementById('sidebar-content'), sidebarOverlay: document.getElementById('sidebar-overlay'),
+                    menuToggle: document.getElementById('menu-toggle'), darkModeToggle: document.getElementById('dark-mode-toggle'),
+                    headerTitle: document.getElementById('header-title'), appContainer: document.getElementById('app-container'),
+                    toast: document.getElementById('toast-notification'),
+                    profile: { avatar: document.getElementById('profile-avatar'), name: document.getElementById('profile-name'), role: document.getElementById('profile-role') },
+                    assignmentModal: document.getElementById('assignment-modal'), materialModal: document.getElementById('material-modal'),
+                },
+                init() {
+                    const token = localStorage.getItem('authToken');
+                    if (!token) { window.location.href = 'unifilogin.html'; return; }
+                    this.setupEventListeners();
+                    this.initDarkMode();
+                    this.loadInitialData();
+                },
+                async loadInitialData() {
+                    const response = await mockAPI.getUser();
+                    if (response.ok) {
+                        this.user = App.mapUserShape(response.data);
+                        this.role = this.user.type === 'teacher' ? 'teacher' : 'student';
+                        this.buildUI(); this.initRouter();
+                    } 
+                    else { alert('فشل تحميل بيانات المستخدم.'); localStorage.removeItem('authToken'); localStorage.removeItem('currentUser'); window.location.href = 'unifilogin.html'; }
+                },
+                mapUserShape(raw){
+                    if(!raw) return null;
+                    const u = { ...raw };
+                    // Normalize keys expected by UI
+                    u.firstName = raw.first_name || raw.firstName || '';
+                    u.lastName = raw.last_name || raw.lastName || '';
+                    u.avatarUrl = raw.avatar_url || raw.avatarUrl || '';
+                    // details may be JSON string
+                    if (typeof raw.details === 'string') {
+                        try{ u.details = JSON.parse(raw.details); }catch{ u.details = {}; }
+                    } else { u.details = raw.details || {}; }
+                    if (raw.type === 'student') {
+                        u.class = { id: raw.class_id, name: raw.class_name, subjectName: raw.subject_name };
+                    }
+                    if (raw.type === 'teacher' && !u.mainSubject) {
+                        if (u.details && u.details.mainSubject) u.mainSubject = u.details.mainSubject;
+                    }
+                    return u;
+                },
+                buildUI() { this.updateHeaderProfile(); this.buildSidebar(); },
+                initRouter() {
+                    window.addEventListener('hashchange', () => this.route());
+                    if (!window.location.hash) window.location.hash = '#dashboard';
+                    this.route();
+                },
+                route() {
+                    const hash = window.location.hash.substring(1) || 'dashboard';
+                    const routes = this.role === 'student' ? App.student.routes : App.teacher.routes;
+                    const route = routes[hash];
+                    if (route) {
+                        document.querySelectorAll('.sidebar-link').forEach(l => l.classList.toggle('active', l.getAttribute('href') === `#${hash}`));
+                        this.elements.headerTitle.textContent = route.title;
+                        this._renderView(route.templateId, route.renderFn);
+                    } else { window.location.hash = '#dashboard'; }
+                },
+                _renderView(templateId, renderFn) {
+                    const template = document.getElementById(templateId);
+                    if (template) { this.elements.appContainer.innerHTML = template.innerHTML; if(renderFn) renderFn(); } 
+                    else { console.error(`Template with id ${templateId} not found.`); }
+                },
+                updateHeaderProfile() {
+                    if (!this.user) return;
+                    const avatar = (this.user.avatarUrl||'').replace('128','40');
+                    this.elements.profile.avatar.src = avatar || 'https://placehold.co/40x40';
+                    this.elements.profile.name.textContent = `${this.user.firstName||''} ${this.user.lastName||''}`.trim();
+                    this.elements.profile.role.textContent = this.role === 'student' ? (this.user.class?.name || 'طالب') : (this.user.mainSubject || 'معلم');
+                },
+                buildSidebar() {
+                    const links = this.role === 'student' ? App.student.sidebarLinks : App.teacher.sidebarLinks;
+                    const linksHTML = links.map(link => `<a href="#${link.id}" class="sidebar-link flex items-center p-3 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"><i class="${link.icon} w-6 text-center text-slate-400"></i><span class="mr-3">${link.text}</span></a>`).join('');
+                    this.elements.sidebarContent.innerHTML = `
+                        <div class="text-center py-4 mb-4"><h1 class="text-2xl font-bold ${this.role === 'student' ? 'text-blue-600 dark:text-blue-500' : 'text-sky-600 dark:text-sky-500'}">${this.role === 'student' ? '🎓 بوابة الطالب' : '🧑‍🏫 بوابة المعلم'}</h1></div>
+                        <nav class="flex-grow space-y-2">${linksHTML}</nav>
+                        <div class="pt-4 border-t border-slate-200 dark:border-slate-700">
+                             <a href="#profile" class="sidebar-link flex items-center p-3 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"><i class="fas fa-user-cog w-6 text-center text-slate-400"></i><span class="mr-3">الملف الشخصي</span></a>
+                            <button id="logout-button" class="w-full flex items-center p-3 rounded-lg text-red-500 hover:bg-red-100 dark:hover:bg-red-900/50 mt-2"><i class="fas fa-sign-out-alt w-6 text-center"></i><span class="mr-3">تسجيل الخروج</span></button>
+                        </div>`;
+                    this.elements.sidebarContent.querySelectorAll('.sidebar-link').forEach(link => link.addEventListener('click', () => { if (window.innerWidth <= 767) this.toggleSidebar(false); }));
+                    this.elements.sidebarContent.querySelector('#logout-button').addEventListener('click', () => this.logout());
+                },
+                setupEventListeners() {
+                    this.elements.menuToggle.addEventListener('click', () => this.toggleSidebar());
+                    this.elements.sidebarOverlay.addEventListener('click', () => this.toggleSidebar(false));
+                    this.elements.darkModeToggle.addEventListener('click', () => this.toggleDarkMode());
+                    document.querySelectorAll('.cancel-modal-btn').forEach(btn => btn.addEventListener('click', e => { e.target.closest('.modal-overlay').style.display = 'none'; }));
+                },
+                logout() { localStorage.removeItem('authToken'); localStorage.removeItem('currentUser'); this.showToast("تم تسجيل الخروج بنجاح."); setTimeout(() => window.location.href = 'unifilogin.html', 800); },
+                toggleSidebar(forceState) { const shouldOpen = forceState === undefined ? !this.elements.sidebar.classList.contains('open') : forceState; this.elements.sidebar.classList.toggle('open', shouldOpen); this.elements.sidebarOverlay.classList.toggle('hidden', !shouldOpen); },
+                initDarkMode() { if (localStorage.getItem('darkMode') === 'true') { document.documentElement.classList.add('dark'); this.elements.darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>'; } },
+                toggleDarkMode() { document.documentElement.classList.toggle('dark'); const isDark = document.documentElement.classList.contains('dark'); localStorage.setItem('darkMode', isDark); this.elements.darkModeToggle.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>'; if(this.gradesChart) { this.gradesChart.destroy(); App.student.renderDashboardView(); } },
+                showToast(message, isError = false) { this.elements.toast.textContent = message; this.elements.toast.className = `toast p-3 rounded-lg text-white shadow-lg ${isError ? 'bg-red-500' : 'bg-green-500'} show`; setTimeout(() => this.elements.toast.classList.remove('show'), 3000); },
+            };
+
+            // =======================================================================
+            // --- STUDENT-SPECIFIC LOGIC ---
+            // =======================================================================
+            App.student = {
+                routes: {
+                    'dashboard': { title: 'لوحة التحكم', templateId: 'student-dashboard-template', renderFn: () => App.student.renderDashboardView() },
+                    'assignments': { title: 'الواجبات', templateId: 'student-assignments-template', renderFn: () => App.student.renderAssignmentsView() },
+                    'grades': { title: 'الدرجات', templateId: 'student-grades-template', renderFn: () => App.student.renderGradesView() },
+                    'schedule': { title: 'الجدول الدراسي', templateId: 'student-schedule-template', renderFn: () => App.student.renderScheduleView() },
+                    'attendance': { title: 'سجل الحضور', templateId: 'student-attendance-template', renderFn: () => App.student.renderAttendanceView() },
+                    'materials': { title: 'المواد التعليمية', templateId: 'student-materials-template', renderFn: () => App.student.renderMaterialsView() },
+                    'events': { title: 'التقويم', templateId: 'student-events-template', renderFn: () => App.student.renderEventsView() },
+                    'profile': { title: 'الملف الشخصي', templateId: 'profile-template', renderFn: () => App.student.renderProfileView() },
+                },
+                sidebarLinks: [
+                    { id: 'dashboard', text: 'لوحة التحكم', icon: 'fas fa-home' }, { id: 'assignments', text: 'الواجبات', icon: 'fas fa-book-open' },
+                    { id: 'grades', text: 'الدرجات', icon: 'fas fa-chart-line' }, { id: 'schedule', text: 'الجدول الدراسي', icon: 'fas fa-calendar-alt' },
+                    { id: 'attendance', text: 'الحضور والغياب', icon: 'fas fa-user-check' }, { id: 'materials', text: 'المواد التعليمية', icon: 'fas fa-folder' },
+                    { id: 'events', text: 'التقويم', icon: 'fas fa-calendar-star' },
+                ],
+                async renderDashboardView() { /* Comprehensive render logic */ },
+                async renderAssignmentsView() { /* Comprehensive render logic */ },
+                async renderGradesView() { /* Comprehensive render logic */ },
+                async renderScheduleView() { /* Comprehensive render logic */ },
+                async renderAttendanceView() { /* Comprehensive render logic */ },
+                async renderMaterialsView() { /* Comprehensive render logic */ },
+                async renderEventsView() { /* Comprehensive render logic */ },
+                renderProfileView() { /* Comprehensive render logic */ },
+            };
+            
+            // =======================================================================
+            // --- TEACHER-SPECIFIC LOGIC ---
+            // =======================================================================
+            App.teacher = {
+                routes: {
+                    'dashboard': { title: 'لوحة التحكم', templateId: 'teacher-dashboard-template', renderFn: () => App.teacher.renderDashboardView() },
+                    'classes': { title: 'الفصول', templateId: 'teacher-classes-template', renderFn: () => App.teacher.renderClassesView() },
+                    'assignments': { title: 'الواجبات', templateId: 'teacher-assignments-template', renderFn: () => App.teacher.renderAssignmentsView() },
+                    'grades': { title: 'رصد الدرجات', templateId: 'teacher-grades-template', renderFn: () => App.teacher.renderGradesView() },
+                    'attendance': { title: 'تسجيل الحضور', templateId: 'teacher-attendance-template', renderFn: () => App.teacher.renderAttendanceView() },
+                    'materials': { title: 'المواد التعليمية', templateId: 'teacher-materials-template', renderFn: () => App.teacher.renderMaterialsView() },
+                    'profile': { title: 'الملف الشخصي', templateId: 'profile-template', renderFn: () => App.teacher.renderProfileView() },
+                },
+                sidebarLinks: [
+                    { id: 'dashboard', text: 'لوحة التحكم', icon: 'fas fa-tachometer-alt' }, { id: 'classes', text: 'الفصول والطلاب', icon: 'fas fa-users' },
+                    { id: 'assignments', text: 'الواجبات', icon: 'fas fa-book' }, { id: 'grades', text: 'رصد الدرجات', icon: 'fas fa-user-graduate' },
+                    { id: 'attendance', text: 'تسجيل الحضور', icon: 'fas fa-user-check' }, { id: 'materials', text: 'المواد التعليمية', icon: 'fas fa-folder-plus' },
+                ],
+                async renderDashboardView() { /* Comprehensive render logic */ },
+                async renderClassesView() { /* Comprehensive render logic */ },
+                async renderAssignmentsView() { /* Comprehensive render logic */ },
+                async renderGradesView() { /* Comprehensive render logic */ },
+                async renderAttendanceView() { /* Comprehensive render logic */ },
+                async renderMaterialsView() { /* Comprehensive render logic */ },
+                renderProfileView() { /* Comprehensive render logic */ },
+                // Modals
+                toggleAssignmentModal(show, assignmentId = null) { /* Comprehensive logic */ },
+                async handleSaveAssignment(e) { /* Comprehensive logic */ },
+                toggleMaterialModal(show) { /* Comprehensive logic */ },
+                async handleSaveMaterial(e) { /* Comprehensive logic */ },
+            };
+            
+            // Populate the detailed render functions
+            Object.assign(App.student, {
+                async renderDashboardView() {
+                    const nameEl = document.getElementById('student-name-banner'); if(nameEl) nameEl.textContent = App.user.firstName||'';
+                    const res = await mockAPI.getStudentDashboard(App.user.id);
+                    if (!res.ok) return;
+                    const { gpa, attendancePercentage, latestAnnouncements } = res.data;
+                    const attEl = document.getElementById('attendance-stat'); if(attEl) attEl.textContent = `${attendancePercentage||0}%`;
+                    const gpaEl = document.getElementById('gpa-stat'); if(gpaEl) gpaEl.textContent = gpa ?? '--';
+                    // pending assignments count from list
+                    const assign = await mockAPI.getStudentAssignments(App.user.id);
+                    const pending = assign.ok ? (assign.data||[]).filter(a=>!a.submission || !a.submission.status).length : 0;
+                    const pendEl = document.getElementById('pending-assignments-stat'); if(pendEl) pendEl.textContent = pending;
+                    const upEl = document.getElementById('upcoming-assignments');
+                    if (assign.ok && upEl) {
+                        const list = (assign.data||[]).slice(0,5);
+                        upEl.innerHTML = list.length>0 ? list.map(a=>`<div class=\"p-2 rounded-md bg-slate-50 dark:bg-slate-700/50 flex justify-between items-center\"><div><p class=\"font-semibold\">${a.title}</p><p class=\"text-xs text-slate-500\">ينتهي في: ${a.dueDate||a.due_date||''}</p></div><a href=\"#assignments\" class=\"text-xs bg-blue-500 text-white px-2 py-1 rounded\">عرض</a></div>`).join('') : `<p class=\"text-slate-500\">لا توجد واجبات جديدة.</p>`;
+                    }
+                    const sched = await mockAPI.getStudentSchedule(App.user.id);
+                    const today = new Date().toLocaleDateString('ar-EG-u-nu-latn', { weekday: 'long' });
+                    const todayClasses = sched.ok && sched.data ? sched.data[today] : [];
+                    const todayEl = document.getElementById('today-schedule');
+                    if (todayEl) todayEl.innerHTML = (todayClasses && todayClasses.length > 0) ? todayClasses.map(c => `<div class=\"p-2 rounded-md bg-slate-50 dark:bg-slate-700/50 flex justify-between\"><span>الحصة ${c.period}</span><span class=\"font-semibold\">${c.subject}</span></div>`).join('') : `<p class=\"text-slate-500\">لا توجد حصص مجدولة لهذا اليوم.</p>`;
+                    const annEl = document.getElementById('latest-announcements');
+                    if (annEl) annEl.innerHTML = (latestAnnouncements && latestAnnouncements.length > 0) ? latestAnnouncements.map(a => `<div class=\"p-2 rounded-md bg-slate-50 dark:bg-slate-700/50\"><p class=\"text-sm\">${a.content}</p><p class=\"text-xs text-slate-400 text-left\">${a.date}</p></div>`).join('') : `<p class=\"text-slate-500\">لا توجد إعلانات.</p>`;
+                    // Skip grades chart for now (requires aggregation); could build from getStudentGrades
+                },
+                async renderAssignmentsView() {
+                     const tableBody = document.getElementById('assignments-table-body');
+                    tableBody.innerHTML = `<tr><td colspan="6" class="p-4 text-center">جاري تحميل الواجبات...</td></tr>`;
+                    const res = await mockAPI.getStudentAssignments(App.user.id);
+                    if(res.ok) {
+                        const statusMap = { submitted: { text: 'تم التسليم', class: 'bg-green-100 text-green-800' }, graded: { text: 'تم التصحيح', class: 'bg-blue-100 text-blue-800' } };
+                        tableBody.innerHTML = res.data.map(a => {
+                            const submissionStatus = a.submission?.grade !== null ? 'graded' : a.submission?.status;
+                            const statusInfo = statusMap[submissionStatus] || { text: 'مطلوب', class: 'bg-yellow-100 text-yellow-800' };
+                            return `
+                                <tr class="border-b dark:border-slate-700">
+                                    <td class="p-3">${a.subject || (App.user.class?.subjectName || '')}</td><td class="p-3 font-semibold">${a.title}</td><td class="p-3">${a.type}</td><td class="p-3">${a.dueDate || a.due_date || ''}</td>
+                                    <td class="p-3"><span class="px-2 py-1 text-xs rounded-full ${statusInfo.class} dark:bg-opacity-20">${statusInfo.text}</span></td>
+                                    <td class="p-3">${!submissionStatus ? `<button data-assignment-id="${a.id}" class="submit-btn text-xs bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700">تسليم</button>` : (a.submission?.grade ? a.submission.grade : '---')}</td>
+                                </tr>`;
+                        }).join('');
+                        tableBody.querySelectorAll('.submit-btn').forEach(btn => btn.addEventListener('click', async (e) => { await mockAPI.submitAssignment(App.user.id, e.target.dataset.assignmentId); App.showToast('تم تسليم الواجب بنجاح.'); this.renderAssignmentsView(); }));
+                    }
+                },
+                async renderGradesView() {
+                    const tableBody = document.getElementById('grades-table-body');
+                    const res = await mockAPI.getStudentGrades(App.user.id);
+                    if(res.ok && res.data.length > 0) {
+                        const getGradeLetter = (grade) => { if(grade >= 90) return 'A'; if(grade >= 80) return 'B'; if(grade >= 70) return 'C'; if(grade >= 60) return 'D'; return 'F'};
+                        tableBody.innerHTML = res.data.map(g => `<tr class="border-b dark:border-slate-700"><td class="p-3">${g.subject}</td><td class="p-3">${g.assignment.title}</td><td class="p-3 font-bold">${g.grade}</td><td class="p-3">${getGradeLetter(g.grade)}</td></tr>`).join('');
+                    } else { tableBody.innerHTML = `<tr><td colspan="4" class="p-4 text-center">لا توجد درجات مرصودة.</td></tr>`; }
+                },
+                async renderScheduleView() {
+                    const container = document.getElementById('schedule-container');
+                    const res = await mockAPI.getStudentSchedule(App.user.id);
+                    if(res.ok) container.innerHTML = Object.entries(res.data).map(([day, classes]) => `<div class="bg-slate-50 dark:bg-slate-700/50 p-4 rounded-lg"><h4 class="font-bold text-lg mb-2">${day}</h4><div class="space-y-1">${classes.length > 0 ? classes.map(c => `<p class="text-sm">الحصة ${c.period}: ${c.subject}</p>`).join('') : '<p class="text-sm text-slate-400">لا توجد حصص</p>'}</div></div>`).join('');
+                },
+                async renderAttendanceView() {
+                    const tableBody = document.getElementById('attendance-table-body');
+                    const res = await mockAPI.getStudentAttendance(App.user.id);
+                     const statusMap = { present: 'حاضر', absent: 'غائب', late: 'متأخر' }; const statusColor = { present: 'text-green-600', absent: 'text-red-600', late: 'text-yellow-600' };
+                    if(res.ok && res.data.length > 0) tableBody.innerHTML = res.data.map(rec => `<tr class="border-b dark:border-slate-700"><td class="p-3">${rec.date}</td><td class="p-3 font-semibold ${statusColor[rec.status]}">${statusMap[rec.status] || rec.status}</td></tr>`).join('');
+                    else tableBody.innerHTML = `<tr><td colspan="2" class="p-4 text-center">لا يوجد سجل حضور.</td></tr>`;
+                },
+                async renderMaterialsView() {
+                    const container = document.getElementById('materials-container');
+                    const res = await mockAPI.getStudentMaterials(App.user.id);
+                    if(res.ok && res.data.length > 0) {
+                        const iconMap = { pdf: 'fa-file-pdf text-red-500', video: 'fa-video text-blue-500', link: 'fa-link text-gray-500' };
+                        container.innerHTML = res.data.map(m => `<div class="flex items-center gap-4 p-3 bg-slate-50 dark:bg-slate-800 rounded-lg"><i class="fas ${iconMap[m.type]} text-2xl"></i><div class="flex-grow"><p class="font-semibold">${m.title}</p><p class="text-xs text-slate-400">أضيف بتاريخ: ${m.date}</p></div><a href="${m.url}" target="_blank" class="text-sky-500 hover:underline">فتح</a></div>`).join('');
+                    } else { container.innerHTML = `<p class="text-slate-500">لا توجد مواد تعليمية مضافة حالياً.</p>`; }
+                },
+                async renderEventsView() {
+                    const container = document.getElementById('events-container');
+                    const res = await mockAPI.getSchoolEvents();
+                     if(res.ok && res.data.length > 0) {
+                        const typeMap = { meeting: 'اجتماع', exam: 'اختبارات', holiday: 'إجازة' };
+                        const colorMap = { meeting: 'bg-blue-100 text-blue-800', exam: 'bg-red-100 text-red-800', holiday: 'bg-green-100 text-green-800' };
+                        container.innerHTML = res.data.map(e => `<div class="flex items-center gap-4 p-3 bg-slate-50 dark:bg-slate-800 rounded-lg"><div class="text-center w-16"><p class="font-bold text-lg">${new Date(e.date).getDate()}</p><p class="text-sm">${new Date(e.date).toLocaleString('ar', { month: 'short' })}</p></div><div class="border-r-2 dark:border-slate-600 pr-4 flex-grow"><p class="font-semibold">${e.title}</p><p class="text-xs"><span class="px-2 py-1 rounded-full ${colorMap[e.type]}">${typeMap[e.type]}</span></p></div></div>`).join('');
+                     } else { container.innerHTML = `<p class="text-slate-500">لا توجد أحداث قادمة.</p>`; }
+                },
+                renderProfileView() {
+                    document.getElementById('profile-page-avatar').src = App.user.avatarUrl;
+                    document.getElementById('profile-page-name').textContent = `${App.user.firstName} ${App.user.lastName}`;
+                    document.getElementById('profile-page-role').textContent = `طالب في ${App.user.class.name}`;
+                    document.getElementById('profile-details').innerHTML = `<div class="grid grid-cols-1 sm:grid-cols-2 gap-4"><div><strong class="block text-slate-500">رقم الطالب:</strong> <span>${App.user.id}</span></div><div><strong class="block text-slate-500">المدرسة:</strong> <span>${App.user.details.school}</span></div><div><strong class="block text-slate-500">تاريخ الالتحاق:</strong> <span>${App.user.details.admissionDate}</span></div></div>`;
+                }
+            });
+            Object.assign(App.teacher, {
+                async renderDashboardView() {
+                    const nameEl = document.getElementById('teacher-name-banner'); if(nameEl) nameEl.textContent = App.user.firstName||'';
+                    const res = await mockAPI.getTeacherDashboard(App.user.id);
+                    if(!res.ok) return;
+                    const today = new Date().toLocaleDateString('ar-EG-u-nu-latn', { weekday: 'long' });
+                    const todayClasses = (res.data.schedule && res.data.schedule[today]) ? res.data.schedule[today] : [];
+                    const todayEl = document.getElementById('today-schedule'); if(todayEl) todayEl.innerHTML = todayClasses.length > 0 ? todayClasses.map(c => `<div class=\"p-2 rounded-md bg-slate-50 dark:bg-slate-700/50\">${c.class} - ${c.subject}</div>`).join('') : '<p class=\"text-slate-500\">لا توجد حصص اليوم.</p>';
+                    const listEl = document.getElementById('assignments-to-grade'); if(listEl) listEl.innerHTML = (res.data.assignmentsToGrade||[]).length > 0 ? res.data.assignmentsToGrade.map(item => `<div class=\"p-2 rounded-md bg-slate-50 dark:bg-slate-700/50 flex justify-between\"><span>${item.assignment.title}</span><a href=\"#grades\" class=\"text-xs text-sky-500\">رصد الدرجة</a></div>`).join('') : '<p class=\"text-slate-500\">لا توجد واجبات للتصحيح.</p>';
+                    document.getElementById('announcement-form').addEventListener('submit', async (e) => { e.preventDefault(); const contentEl = document.getElementById('announcement-content'); if(contentEl.value.trim()) { await mockAPI.sendAnnouncement(App.user.id, contentEl.value.trim()); App.showToast('تم إرسال الإعلان بنجاح.'); contentEl.value = ''; } });
+                },
+                async renderClassesView() {
+                     const container = document.getElementById('classes-container');
+                    const studentListContainer = document.getElementById('student-list-container'); studentListContainer.innerHTML = '';
+                    const res = await mockAPI.getTeacherClasses(App.user.id);
+                    if(res.ok) {
+                        container.innerHTML = res.data.map(c => `<div class="bg-slate-50 dark:bg-slate-800 p-4 rounded-lg shadow cursor-pointer hover:ring-2 ring-sky-500 transition" data-class-id="${c.id}"><h4 class="font-bold text-lg">${c.name}</h4><p class="text-sm text-slate-500">${c.subjectName}</p><div class="text-xs mt-2 flex justify-between"><span><i class="fas fa-users"></i> ${c.studentCount}</span><span><i class="fas fa-star"></i> ${c.averageGrade}</span></div></div>`).join('');
+                        container.querySelectorAll('[data-class-id]').forEach(card => card.addEventListener('click', async e => {
+                            const classId = e.currentTarget.dataset.classId;
+                            studentListContainer.innerHTML = `<div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-md"><p>جاري تحميل الطلاب...</p></div>`;
+                            const studentRes = await mockAPI.getStudentsByClass(classId);
+                            if (studentRes.ok) { const className = (App.user.classes||[]).find(c=>String(c.id) === String(classId))?.name || ''; studentListContainer.innerHTML = `<div class=\"bg-white dark:bg-slate-800 p-6 rounded-xl shadow-md\"><h4 class=\"text-lg font-semibold mb-4\">طلاب فصل: ${className}</h4><ul class=\"space-y-2\">${studentRes.data.map(s => { const av=(s.avatar_url||'').replace('128','40'); const fn=s.first_name||s.firstName||''; const ln=s.last_name||s.lastName||''; return `<li class=\"flex items-center gap-3 p-2 rounded-md bg-slate-50 dark:bg-slate-700/50\"><img src=\"${av}\" class=\"w-8 h-8 rounded-full\"><span>${fn} ${ln}</span><span class=\"mr-auto text-sm font-mono text-slate-500\">${s.id}</span></li>`; }).join('')}</ul></div>`; }
+                        }));
+                    }
+                },
+                async renderAssignmentsView() {
+                    document.getElementById('add-assignment-btn').addEventListener('click', () => this.toggleAssignmentModal(true));
+                    const tableBody = document.getElementById('assignments-table-body');
+                    const res = await mockAPI.getTeacherAssignments(App.user.id);
+                    if(res.ok) {
+                        tableBody.innerHTML = res.data.map(a => `<tr class="border-b dark:border-slate-700"><td class="p-3">${a.title}</td><td>${a.className}</td><td>${a.dueDate}</td><td>${a.gradedCount}/${a.submissionCount}</td><td class="p-3 space-x-2 rtl:space-x-reverse"><button data-id="${a.id}" class="edit-btn text-blue-500 hover:text-blue-700"><i class="fas fa-edit"></i></button><button data-id="${a.id}" class="delete-btn text-red-500 hover:text-red-700"><i class="fas fa-trash"></i></button></td></tr>`).join('');
+                        tableBody.querySelectorAll('.edit-btn').forEach(btn => btn.addEventListener('click', e => this.toggleAssignmentModal(true, btn.dataset.id)));
+                        tableBody.querySelectorAll('.delete-btn').forEach(btn => btn.addEventListener('click', async e => { if(confirm('هل أنت متأكد من الحذف؟ سيتم حذف كل التسليمات المتعلقة به.')) { await mockAPI.deleteAssignment(btn.dataset.id); App.showToast('تم الحذف.'); this.renderAssignmentsView(); } }));
+                    }
+                },
+                async renderGradesView() {
+                    const assignmentSelect = document.getElementById('grade-assignment-select');
+                    const tableBody = document.getElementById('grading-table-body');
+                    const assignmentsRes = await mockAPI.getTeacherAssignments(App.user.id);
+                    if(assignmentsRes.ok && assignmentsRes.data.length > 0) {
+                        assignmentSelect.innerHTML = assignmentsRes.data.map(a => `<option value="${a.id}">${a.title} (${a.className})</option>`).join('');
+                        const loadSubmissions = async () => {
+                            const assignmentId = assignmentSelect.value; tableBody.innerHTML = `<tr><td colspan="4" class="p-4 text-center">جاري التحميل...</td></tr>`;
+                            const subRes = await mockAPI.getSubmissionsForAssignment(assignmentId);
+                            if(subRes.ok) {
+                                tableBody.innerHTML = subRes.data.map(({student, submission}) => `<tr data-student-id="${student.id}"><td class="p-3">${student.firstName} ${student.lastName}</td><td class="p-3">${submission?.status === 'submitted' ? 'تم التسليم' : 'لم يسلم'}</td><td class="p-3"><input type="number" min="0" max="100" class="w-24 bg-slate-100 dark:bg-slate-700 p-1 rounded-md" value="${submission?.grade || ''}"></td><td class="p-3"><button class="save-grade-btn text-xs bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700">حفظ</button></td></tr>`).join('');
+                                tableBody.querySelectorAll('.save-grade-btn').forEach(btn => btn.addEventListener('click', async (e) => { const row = e.target.closest('tr'); const grade = row.querySelector('input').value; if(grade!=='' && grade!==null) { await mockAPI.saveGrade(row.dataset.studentId, assignmentId, parseInt(grade,10)); App.showToast('تم حفظ الدرجة.'); } }));
+                            }
+                        };
+                        assignmentSelect.addEventListener('change', loadSubmissions); loadSubmissions();
+                    } else { assignmentSelect.innerHTML = '<option>لا توجد واجبات</option>'; tableBody.innerHTML = `<tr><td colspan="4" class="p-4 text-center"></td></tr>`; }
+                },
+                async renderAttendanceView() {
+                     const classSelect = document.getElementById('att-class-select'); const dateSelect = document.getElementById('att-date-select'); const saveBtn = document.getElementById('save-attendance-btn'); dateSelect.value = new Date().toISOString().split('T')[0];
+                    classSelect.innerHTML = App.user.classes.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+                    const loadStudentsForAttendance = async () => {
+                        const classId = classSelect.value; const date = dateSelect.value; const tableBody = document.getElementById('attendance-table-body'); tableBody.innerHTML = `<tr><td colspan="2" class="p-4 text-center">جاري تحميل الطلاب...</td></tr>`;
+                        const res = await mockAPI.getAttendanceForClass(date, classId);
+                        if(res.ok) {
+                            tableBody.innerHTML = res.data.map(({student, status}) => `<tr data-student-id=\"${student.id}\"><td class=\"p-3\">${student.firstName} ${student.lastName}</td><td class=\"p-3 text-center\"><select class=\"att-status bg-slate-100 dark:bg-slate-700 p-1 rounded-md\"><option value=\"present\" ${status === 'present' ? 'selected' : ''}>حاضر</option><option value=\"late\" ${status === 'late' ? 'selected' : ''}>متأخر</option><option value=\"absent\" ${status === 'absent' ? 'selected' : ''}>غائب</option></select></td></tr>`).join('');
+                            saveBtn.classList.remove('hidden');
+                        }
+                    };
+                    classSelect.addEventListener('change', loadStudentsForAttendance); dateSelect.addEventListener('change', loadStudentsForAttendance);
+                    saveBtn.addEventListener('click', async () => { const attendanceData = {}; document.querySelectorAll('#attendance-table-body tr').forEach(row => { attendanceData[row.dataset.studentId] = row.querySelector('.att-status').value; }); await mockAPI.saveAttendance(dateSelect.value, attendanceData); App.showToast('تم حفظ سجل الحضور بنجاح.'); });
+                    loadStudentsForAttendance();
+                },
+                async renderMaterialsView() {
+                    document.getElementById('add-material-btn').addEventListener('click', () => this.toggleMaterialModal(true));
+                    const tableBody = document.getElementById('materials-table-body');
+                    const res = await mockAPI.getMaterialsByTeacher(App.user.id);
+                    if(res.ok) {
+                        const iconMap = { pdf: 'fa-file-pdf', video: 'fa-video', link: 'fa-link' };
+                        tableBody.innerHTML = res.data.map(m => `<tr class="border-b dark:border-slate-700"><td class="p-3"><i class="fas ${iconMap[m.type]} mr-2 rtl:ml-2"></i>${m.title}</td><td>${m.type}</td><td>${m.className}</td><td>${m.date}</td><td class="p-3"><button data-id="${m.id}" class="delete-material-btn text-red-500 hover:text-red-700"><i class="fas fa-trash"></i></button></td></tr>`).join('');
+                        tableBody.querySelectorAll('.delete-material-btn').forEach(btn => btn.addEventListener('click', async e => { if(confirm('هل أنت متأكد؟')) { await mockAPI.deleteMaterial(btn.dataset.id); App.showToast('تم حذف المادة.'); this.renderMaterialsView(); }}));
+                    }
+                },
+                renderProfileView() {
+                    document.getElementById('profile-page-avatar').src = App.user.avatarUrl; document.getElementById('profile-page-name').textContent = `${App.user.firstName} ${App.user.lastName}`; document.getElementById('profile-page-role').textContent = `معلم ${App.user.mainSubject}`;
+                    document.getElementById('profile-details').innerHTML = `<div class="grid grid-cols-1 sm:grid-cols-2 gap-4"><div><strong class="block text-slate-500">رقم المعلم:</strong> <span>${App.user.id}</span></div><div><strong class="block text-slate-500">البريد الإلكتروني:</strong> <span dir="ltr">${App.user.details.email}</span></div><div><strong class="block text-slate-500">رقم الهاتف:</strong> <span dir="ltr">${App.user.details.phone}</span></div><div><strong class="block text-slate-500">مكتب:</strong> <span>${App.user.details.office}</span></div></div>`;
+                },
+                toggleAssignmentModal(show, assignmentId = null) {
+                    const modal = App.elements.assignmentModal; const form = modal.querySelector('#assignment-form'); form.reset(); modal.querySelector('#assignment-id').value = '';
+                    const classSelect = modal.querySelector('#assignment-class'); classSelect.innerHTML = App.user.classes.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+                    if (show && assignmentId) { const assignment = mockDB.assignments[assignmentId]; modal.querySelector('#modal-title').textContent = 'تعديل الواجب'; modal.querySelector('#assignment-id').value = assignment.id; modal.querySelector('#assignment-title').value = assignment.title; modal.querySelector('#assignment-type').value = assignment.type; modal.querySelector('#assignment-class').value = assignment.classId; modal.querySelector('#assignment-due-date').value = assignment.dueDate; } 
+                    else { modal.querySelector('#modal-title').textContent = 'إضافة واجب/اختبار جديد'; }
+                    if (show) { modal.style.display = 'flex'; setTimeout(() => modal.classList.add('flex'), 10); } 
+                    else { modal.classList.remove('flex'); setTimeout(() => modal.style.display = 'none', 200); }
+                },
+                async handleSaveAssignment(e) { e.preventDefault(); const formData = { id: document.getElementById('assignment-id').value || null, title: document.getElementById('assignment-title').value, type: document.getElementById('assignment-type').value, classId: document.getElementById('assignment-class').value, dueDate: document.getElementById('assignment-due-date').value }; await mockAPI.saveAssignment(formData); App.showToast('تم حفظ الواجب بنجاح.'); this.toggleAssignmentModal(false); if(window.location.hash === '#assignments') this.renderAssignmentsView(); },
+                toggleMaterialModal(show) {
+                    const modal = App.elements.materialModal; const form = modal.querySelector('#material-form'); form.reset();
+                    if(show) {
+                        modal.querySelector('#material-class').innerHTML = App.user.classes.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+                        modal.style.display = 'flex'; setTimeout(() => modal.classList.add('flex'), 10);
+                    } else {
+                        modal.classList.remove('flex'); setTimeout(() => modal.style.display = 'none', 200);
+                    }
+                },
+                async handleSaveMaterial(e) { e.preventDefault(); const formData = { title: document.getElementById('material-title').value, type: document.getElementById('material-type').value, classId: document.getElementById('material-class').value, url: document.getElementById('material-url').value, addedBy: App.user.id }; await mockAPI.addMaterial(formData); App.showToast('تمت إضافة المادة.'); this.toggleMaterialModal(false); if(window.location.hash === '#materials') this.renderMaterialsView(); },
+            });
+
+            // Add event listeners for teacher modals
+            App.elements.assignmentModal.querySelector('#assignment-form').addEventListener('submit', (e) => App.teacher.handleSaveAssignment(e));
+            App.elements.materialModal.querySelector('#material-form').addEventListener('submit', (e) => App.teacher.handleSaveMaterial(e));
+            
+            App.init();
+        });
+    </script>
+</body>
+</html>

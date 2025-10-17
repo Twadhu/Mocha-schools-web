@@ -1,0 +1,13 @@
+{
+  "name": "schools-sites/api",
+  "description": "JWT-enabled PHP API for Schools-sites",
+  "type": "project",
+  "require": {
+    "firebase/php-jwt": "^6.10"
+  },
+  "autoload": {
+    "psr-4": {
+      "": ""
+    }
+  }
+}

@@ -85,7 +85,7 @@ function buildApiUrl(path){
   if(!email||!password){ msg.textContent=msgs[lang].fill; msg.className='msg err'; msg.style.display='block'; return; }
   msg.textContent=msgs[lang].checking; msg.className='msg'; msg.style.display='block';
    try {
-  const res = await apiFetch('api/auth.php',{ method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ email, password, role:'student' }) });
+  const res = await apiFetch('api/api.php?action=login',{ method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ email, password, role:'student' }) });
      const data = await res.json();
   if(!res.ok || !data.ok){ throw new Error(data.message||msgs[lang].fail); }
   msg.textContent=msgs[lang].success; msg.className='msg ok';
@@ -104,7 +104,7 @@ function buildApiUrl(path){
     } else {
       try{ localStorage.removeItem('remember:student:email'); }catch{}
     }
-     setTimeout(()=> location='student.html', 800);
+  setTimeout(()=> location='portal.html', 800);
   }catch(err){ if(err.message==='EXPIRED') return; msg.textContent= err.message||msgs[lang].network; msg.className='msg err'; }
  }
  async function fakeAuth(email,password,role){
