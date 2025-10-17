@@ -10,6 +10,13 @@
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
   <style>
     body { font-family: 'Tajawal', sans-serif; }
+    /* Lint-friendly extracted styles */
+    .director-tools { position: fixed; bottom: 12px; left: 12px; z-index: 50; background: rgba(30,41,59,.8); color: #fff; padding: 10px 12px; border-radius: 10px; font-family: Cairo, sans-serif; display: none; }
+    .director-tools .pwd-panel { display: none; margin-top: 8px; }
+    .btn-pwd { background: #3b82f6; color: #fff; border: none; border-radius: 8px; padding: 6px 10px; cursor: pointer; }
+    .btn-save { background: #10b981; color: #05331c; border: none; border-radius: 8px; padding: 6px 10px; cursor: pointer; }
+    .director-input { padding: 6px 10px; border-radius: 8px; border: none; margin-inline-end: 6px; }
+    .pwd-msg { margin-inline-start: 8px; color: #eab308; }
   </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
@@ -57,17 +64,68 @@
 
     <section class="bg-white rounded-lg shadow p-4">
       <h2 class="font-semibold mb-2">طلب تقرير</h2>
-      <form id="report-form" class="grid grid-cols-1 md:grid-cols-4 gap-2">
+      <form id="report-form" class="grid grid-cols-1 md:grid-cols-5 gap-2">
         <input class="border p-2 rounded" placeholder="نوع التقرير مثل attendance" id="rep-type" />
         <input class="border p-2 rounded" placeholder='معاملات JSON مثل {"from":"2025-10-01"}' id="rep-params" />
-        <button class="px-3 py-2 bg-indigo-600 text-white rounded" type="submit">إنشاء طلب</button>
-        <button class="px-3 py-2 bg-gray-600 text-white rounded" id="btn-refresh-requests" type="button">تحديث الطلبات</button>
+        <input class="border p-2 rounded" type="date" id="filter-from" placeholder="من" />
+        <input class="border p-2 rounded" type="date" id="filter-to" placeholder="إلى" />
+        <div class="flex gap-2">
+          <button class="px-3 py-2 bg-indigo-600 text-white rounded" type="submit">إنشاء</button>
+          <button class="px-3 py-2 bg-gray-600 text-white rounded" id="btn-refresh-requests" type="button">تحديث</button>
+          <button class="px-3 py-2 bg-emerald-600 text-white rounded" id="btn-export-requests" type="button">CSV</button>
+        </div>
       </form>
       <div class="mt-3">
         <h3 class="font-semibold">الطلبات</h3>
         <ul id="requests-list" class="list-disc pr-6 text-sm"></ul>
+        <div class="mt-3">
+          <label class="text-sm">معرف الطلب للعرض:</label>
+          <input class="border p-1 rounded w-32" id="sub-req-id" placeholder="#" />
+          <button class="px-3 py-1 bg-blue-600 text-white rounded" id="btn-load-submissions" type="button">عرض التسليمات</button>
+          <button class="px-3 py-1 bg-emerald-600 text-white rounded" id="btn-export-submissions" type="button">CSV</button>
+        </div>
+        <div class="mt-2">
+          <ul id="submissions-list" class="list-disc pr-6 text-sm"></ul>
+        </div>
       </div>
     </section>
+      <!-- Quick access strip for director login override and password update -->
+      <div id="director-tools" class="director-tools">
+        <button id="btnShowPwd" class="btn-pwd">تغيير كلمة المرور</button>
+        <div id="pwdPanel" class="pwd-panel">
+          <input id="oldPwd" type="password" placeholder="كلمة المرور الحالية" class="director-input">
+          <input id="newPwd" type="password" placeholder="كلمة مرور جديدة" class="director-input">
+          <button id="btnSavePwd" class="btn-save">حفظ</button>
+          <span id="pwdMsg" class="pwd-msg"></span>
+        </div>
+      </div>
+      <script>
+      (function(){
+        // Show tools if currentUser is director or if special username is present in storage
+        try{
+          const u = JSON.parse(localStorage.getItem('currentUser')||'{}');
+          if(u && (u.type==='director' || u.email==='@mokha_manager')){
+            document.getElementById('director-tools').style.display='block';
+          }
+        }catch{}
+        const btn = document.getElementById('btnShowPwd'); const panel=document.getElementById('pwdPanel');
+        if(btn){ btn.addEventListener('click',()=>{ panel.style.display = panel.style.display==='none'?'block':'none'; }); }
+        async function buildApiUrl(path){ path=String(path||'').replace(/^\/+/, ''); const here=location.pathname; const marker='front-mocha-schools-website'; let basePrefix='../'; if(here.includes(marker)){ const after = here.split(marker)[1]||''; const seg = after.split('/').filter(s=>s && s.indexOf('.')===-1); basePrefix = '../'.repeat(1+seg.length); } return basePrefix + path; }
+        const saveBtn = document.getElementById('btnSavePwd'); const msg=document.getElementById('pwdMsg');
+        if(saveBtn){ saveBtn.addEventListener('click', async()=>{
+          msg.textContent='';
+          const oldPwd = document.getElementById('oldPwd').value; const newPwd=document.getElementById('newPwd').value;
+          if(!oldPwd || !newPwd){ msg.textContent='املأ الحقول'; return; }
+          try{
+            const token = localStorage.getItem('authToken')||'';
+            const res = await fetch(await buildApiUrl('api/api.php?action=director_change_password'), { method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+token}, body: JSON.stringify({ old_password: oldPwd, new_password: newPwd }) });
+            const d = await res.json().catch(()=>({ok:false}));
+            if(!res.ok || !d.ok){ throw new Error(d.message||'failed'); }
+            msg.style.color='#10b981'; msg.textContent='تم التحديث';
+          }catch(e){ msg.style.color='#f59e0b'; msg.textContent='تعذر التحديث'; }
+        }); }
+      })();
+      </script>
   </main>
 
   <script>
@@ -80,7 +138,7 @@
       return { 'Authorization': 'Bearer ' + token };
     }
     async function apiGet(action){
-      const res = await fetch(buildApiUrl('api/api.php?action='+encodeURIComponent(action)), { headers: authHeaders() });
+      const res = await fetch(buildApiUrl('api/api.php?action='+action), { headers: authHeaders() });
       return res.json();
     }
     async function apiPost(action, body){
@@ -145,7 +203,11 @@
     });
 
     async function refreshRequests(){
-      const r = await apiGet('report_requests');
+      const params = new URLSearchParams();
+      const t = document.getElementById('rep-type').value.trim(); if(t) params.set('type', t);
+      const f = document.getElementById('filter-from').value; if(f) params.set('from', f);
+      const to = document.getElementById('filter-to').value; if(to) params.set('to', to);
+      const r = await apiGet('report_requests&'+params.toString());
       const list = document.getElementById('requests-list');
       const arr = (r && r.requests) || [];
       list.innerHTML = arr.map(x=>`<li>#${x.id} - ${x.type} - ${x.created_at}</li>`).join('');
@@ -160,6 +222,28 @@
       await refreshRequests();
     });
     document.getElementById('btn-refresh-requests').addEventListener('click', refreshRequests);
+    document.getElementById('btn-export-requests').addEventListener('click', ()=>{
+      const params = new URLSearchParams();
+      const t = document.getElementById('rep-type').value.trim(); if(t) params.set('type', t);
+      const f = document.getElementById('filter-from').value; if(f) params.set('from', f);
+      const to = document.getElementById('filter-to').value; if(to) params.set('to', to);
+      params.set('format','csv');
+      window.open(buildApiUrl('api/api.php?action=report_requests&'+params.toString()), '_blank');
+    });
+
+    document.getElementById('btn-load-submissions').addEventListener('click', async ()=>{
+      const id = parseInt(document.getElementById('sub-req-id').value||'0',10);
+      if(!id){ alert('أدخل المعرف'); return; }
+      const r = await apiGet('report_submissions&requestId='+id);
+      const list = document.getElementById('submissions-list'); const arr = (r && r.submissions) || [];
+      list.innerHTML = arr.map(x=>`<li>#${x.id} - ${x.school_name||x.school_id} - ${x.submitted_at}</li>`).join('');
+    });
+    document.getElementById('btn-export-submissions').addEventListener('click', ()=>{
+      const id = parseInt(document.getElementById('sub-req-id').value||'0',10);
+      if(!id){ alert('أدخل المعرف'); return; }
+      const params = new URLSearchParams({ requestId: String(id), format:'csv' });
+      window.open(buildApiUrl('api/api.php?action=report_submissions&'+params.toString()), '_blank');
+    });
 
     load();
   </script>

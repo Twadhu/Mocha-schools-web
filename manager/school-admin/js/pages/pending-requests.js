@@ -19,14 +19,13 @@
     const qs = new URLSearchParams();
     if(sid) qs.set('school_id', sid);
     qs.set('status','pending');
-    const data = await mkApi.apiJson('account-requests.php?'+qs.toString());
+  const data = await mkApi.apiJson('api.php?action=pending_requests&'+qs.toString());
     if(!data?.ok) throw new Error(data?.message||'load-failed');
     return data.requests||[];
   }
 
   async function decideRequest(id, decision){
-    const path = `account-requests.php/${id}/decision`;
-    return await mkApi.apiJson(path, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ decision }) });
+  return await mkApi.apiJson('api.php?action=request_decision', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ id, decision }) });
   }
 
   function renderTable(container, rows){

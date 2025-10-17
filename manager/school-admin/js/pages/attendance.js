@@ -1,7 +1,7 @@
 (function(){
   if(window.AppCore){ AppCore.registerTranslations({ ar:{ attendance:'الحضور' }, en:{ attendance:'Attendance'} }); }
   function t(a,b){ return (App?.currentLang||'ar')==='ar'?a:b; }
-  async function fetchAttendance(params){ const qs=new URLSearchParams(params); const d=await mkApi.apiJson('admin.php?path=attendance&'+qs.toString()); if(!d.ok) throw new Error(d.message||'failed'); return d.items||[]; }
+  async function fetchAttendance(params){ const qs=new URLSearchParams(params); const d=await mkApi.apiJson('api.php?action=attendance&'+qs.toString()); if(!d.ok) throw new Error(d.message||'failed'); return d.items||[]; }
   window.initAttendance = function(host){
     const tpl = host || document.getElementById('pageContent');
     if(!tpl) return;

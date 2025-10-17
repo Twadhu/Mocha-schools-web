@@ -422,6 +422,17 @@
                 <div class="card-header"><h3 class="card-title" data-i18n-key="requests"></h3><div class="card-icon"><i class="fas fa-clipboard-list"></i></div></div>
                 <div class="stat" id="pendingRequests">0</div><div class="stat-label" data-i18n-key="pending"></div>
             </div>
+            <div class="card">
+                <div class="card-header"><h3 class="card-title">المدارس</h3></div>
+                <div class="card-body">
+                    <div id="schoolsSummary" class="table-container">
+                        <table>
+                          <thead><tr><th>المدرسة</th><th>الطلاب</th><th>المعلمين</th><th>الأنشطة</th><th>طلبات قيد المراجعة</th></tr></thead>
+                          <tbody id="schoolsSummaryBody"><tr><td colspan="5" class="placeholder-cell">... جاري التحميل</td></tr></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
         <div class="card motivation-card">
             <div class="typewriter-container">
@@ -811,6 +822,7 @@
     async function initDashboard() {
         initDashboardDate();
         await loadDashboardMetrics();
+        await loadSchoolsSummary();
         const quoteElement = document.getElementById('motivationQuoteText');
         typewriterEffect(quoteElement, App.t('teacherMotivationQuote'), 50);
     }
@@ -840,6 +852,23 @@
             console.warn('Failed to load dashboard metrics', e);
             ['totalStudents','totalTeachers','totalActivities','pendingRequests'].forEach(id=>setText(id,'—'));
         }
+    }
+
+    async function loadSchoolsSummary(){
+        const body = document.getElementById('schoolsSummaryBody'); if(!body) return;
+        try {
+            const list = await mkApi.apiJson('api.php?action=schools');
+            const schools = (list && list.schools) || [];
+            if(!schools.length){ body.innerHTML = '<tr><td colspan="5" class="placeholder-cell">لا توجد مدارس</td></tr>'; return; }
+            // Fetch metrics per school sequentially to reduce DB load
+            const rows = [];
+            for(const s of schools){
+                const sid = parseInt(s.id,10)||0; let m = {students:0,teachers:0,activities:0,pending_requests:0};
+                try { const r = await mkApi.apiJson('api.php?action=school_metrics&schoolId='+sid); if(r && r.ok){ m=r; } } catch(_){ }
+                rows.push(`<tr><td>${mkApi.escapeHtml(s.name||('ID '+sid))}</td><td>${m.students}</td><td>${m.teachers}</td><td>${m.activities}</td><td>${m.pending_requests}</td></tr>`);
+            }
+            body.innerHTML = rows.join('');
+        } catch(e){ body.innerHTML = '<tr><td colspan="5" class="placeholder-cell">تعذر التحميل</td></tr>'; }
     }
 
     async function initSubjects() {

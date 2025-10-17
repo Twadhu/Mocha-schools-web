@@ -7,14 +7,14 @@
   function t(a,b){ return (window.App?.currentLang||'ar')==='ar'?a:b; }
 
   const Limits = { max_first:20, max_final:30, pass_threshold:50 };
-  async function fetchLimits(){ try{ const d=await mkApi.apiJson('admin.php?path=score-limits'); if(d?.ok){ Object.assign(Limits,{max_first:d.max_first,max_final:d.max_final,pass_threshold:d.pass_threshold}); } }catch(e){} }
-  async function listSubjects(){ const d=await mkApi.apiJson('admin.php?path=subjects'); if(!d.ok) return []; return d.subjects||[]; }
-  async function listBySubject(grade, section, subject, term, year){ const qs=new URLSearchParams({grade,section,subject,term,year}); const d=await mkApi.apiJson('admin.php?path=subject-results&'+qs.toString()); if(!d.ok) throw new Error(d.message||'load-failed'); return d.items||[]; }
-  async function fetchLockState(grade, section, subject, term, year){ const qs=new URLSearchParams({grade,section,subject,term,year}); const d=await mkApi.apiJson('admin.php?path=results/lock-state&'+qs.toString()); if(!d.ok) return {locked:false, approved:false}; return { locked: !!d.locked, approved: !!d.approved };
+  async function fetchLimits(){ try{ const d=await mkApi.apiJson('api.php?action=score_limits'); if(d?.ok){ Object.assign(Limits,{max_first:d.max_first,max_final:d.max_final,pass_threshold:d.pass_threshold}); } }catch(e){} }
+  async function listSubjects(){ const d=await mkApi.apiJson('api.php?action=subjects'); if(!d.ok) return []; return d.subjects||[]; }
+  async function listBySubject(grade, section, subject, term, year){ const qs=new URLSearchParams({grade,section,subject,term,year}); const d=await mkApi.apiJson('api.php?action=subject_results&'+qs.toString()); if(!d.ok) throw new Error(d.message||'load-failed'); return d.items||[]; }
+  async function fetchLockState(grade, section, subject, term, year){ const qs=new URLSearchParams({grade,section,subject,term,year}); const d=await mkApi.apiJson('api.php?action=results_lock_state&'+qs.toString()); if(!d.ok) return {locked:false, approved:false}; return { locked: !!d.locked, approved: !!d.approved };
   }
-  async function toggleLock(grade, section, subject, term, year, want){ const d=await mkApi.apiJson('admin.php?path=results/lock', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ grade, section, subject, term, year, lock: !!want }) }); if(!d.ok) throw new Error(d.message||'lock-failed'); }
-  async function toggleApprove(grade, section, subject, term, year, want){ const d=await mkApi.apiJson('admin.php?path=results/approve', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ grade, section, subject, term, year, approve: !!want }) }); if(!d.ok) throw new Error(d.message||'approve-failed'); }
-  async function upsert(student_id, subject, term, year, first, final){ const d=await mkApi.apiJson('admin.php?path=results',{method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({student_id,subject,term,year,first,final})}); if(!d.ok) throw new Error(d.message||'save-failed'); }
+  async function toggleLock(grade, section, subject, term, year, want){ const d=await mkApi.apiJson('api.php?action=results_lock', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ grade, section, subject, term, year, lock: !!want }) }); if(!d.ok) throw new Error(d.message||'lock-failed'); }
+  async function toggleApprove(grade, section, subject, term, year, want){ const d=await mkApi.apiJson('api.php?action=results_approve', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ grade, section, subject, term, year, approve: !!want }) }); if(!d.ok) throw new Error(d.message||'approve-failed'); }
+  async function upsert(student_id, subject, term, year, first, final){ const d=await mkApi.apiJson('api.php?action=results',{method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({student_id,subject,term,year,first,final})}); if(!d.ok) throw new Error(d.message||'save-failed'); }
 
   function buildUI(root){
     root.innerHTML = `

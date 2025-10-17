@@ -5,10 +5,10 @@
   }); }
 
   function t(ar,en){ return (window.App?.currentLang||'ar')==='ar'?ar:en; }
-  async function apiList(){ const d=await mkApi.apiJson('admin.php?path=subjects'); if(!d.ok) throw new Error(d.message||'Failed'); return d.subjects||[]; }
-  async function apiCreate(name){ const d=await mkApi.apiJson('admin.php?path=subjects',{method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({name})}); if(!d.ok) throw new Error(d.message||'Failed'); return d; }
-  async function apiUpdate(id,name){ const d=await mkApi.apiJson('admin.php?path=subjects/'+id,{method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify({name})}); if(!d.ok) throw new Error(d.message||'Failed'); return d; }
-  async function apiDelete(id){ const res=await mkApi.apiFetch('admin.php?path=subjects/'+id,{method:'DELETE'}); const d=await res.json().catch(()=>({ok:false})); if(!d.ok) throw new Error(d.message||'Failed'); return d; }
+  async function apiList(){ const d=await mkApi.apiJson('api.php?action=subjects'); if(!d.ok) throw new Error(d.message||'Failed'); return d.subjects||[]; }
+  async function apiCreate(name){ const d=await mkApi.apiJson('api.php?action=subjects',{method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({name})}); if(!d.ok) throw new Error(d.message||'Failed'); return d; }
+  async function apiUpdate(id,name){ const d=await mkApi.apiJson('api.php?action=subjects_update&id='+encodeURIComponent(id),{method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify({name})}); if(!d.ok) throw new Error(d.message||'Failed'); return d; }
+  async function apiDelete(id){ const res=await mkApi.apiFetch('api.php?action=subjects_delete&id='+encodeURIComponent(id),{method:'DELETE'}); const d=await res.json().catch(()=>({ok:false})); if(!d.ok) throw new Error(d.message||'Failed'); return d; }
 
   function ensureMarkup(host){
     const root = host || document.getElementById('pageContent'); if(!root) return { tbody:null, addBtn:null };

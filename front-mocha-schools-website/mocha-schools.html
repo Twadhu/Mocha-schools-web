@@ -74,8 +74,7 @@
                         <a href="#" onclick="changeLanguage('ru')" class="flex items-center gap-2 p-2 hover:bg-gray-100"><span>🇷🇺</span> Русский</a>
                     </div>
                 </div>
-                 <a href="student-login.html" class="hidden md:block bg-blue-600 text-white px-5 py-2 rounded-full hover:bg-blue-700 transition duration-300 text-sm font-semibold" data-ar="بوابة الطالب" data-en="Student Portal" data-zh="学生门户" data-ru="Портал студента">بوابة الطالب</a>
-                 <a href="teacher-login.html" class="hidden md:block bg-gray-700 text-white px-5 py-2 rounded-full hover:bg-gray-800 transition duration-300 text-sm font-semibold" data-ar="بوابة المعلم" data-en="Teacher Portal" data-zh="教师门户" data-ru="Портал преподавателя">بوابة المعلم</a>
+                 <a href="../manager/school-login.html" class="hidden md:block bg-blue-600 text-white px-5 py-2 rounded-full hover:bg-blue-700 transition duration-300 text-sm font-semibold" data-ar="تسجيل الدخول الموحد" data-en="Unified Login" data-zh="统一登录" data-ru="Единый вход">تسجيل الدخول الموحد</a>
             </div>
             <button id="mobile-menu-button" class="md:hidden text-gray-700">
                 <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" /></svg>
@@ -246,7 +245,7 @@
             const mainNav = document.querySelector('header ul');
             const mobileMenuContainer = document.getElementById('mobile-menu');
             let mobileNavHTML = `<ul class="flex flex-col p-4 space-y-2">${mainNav.innerHTML}</ul>`;
-            mobileNavHTML += `<div class="p-4 mt-2 border-t space-y-3"><a href="student-login.html" class="block text-center bg-blue-600 text-white px-5 py-2 rounded-full hover:bg-blue-700 transition" data-ar="بوابة الطالب" data-en="Student Portal" data-zh="学生门户" data-ru="Портал студента">بوابة الطالب</a><a href="teacher-login.html" class="block text-center bg-gray-700 text-white px-5 py-2 rounded-full hover:bg-gray-800 transition" data-ar="بوابة المعلم" data-en="Teacher Portal" data-zh="教师门户" data-ru="Портал преподавателя">بوابة المعلم</a></div>`;
+            mobileNavHTML += `<div class="p-4 mt-2 border-t space-y-3"><a href="../manager/school-login.html" class="block text-center bg-blue-600 text-white px-5 py-2 rounded-full hover:bg-blue-700 transition" data-ar="تسجيل الدخول الموحد" data-en="Unified Login" data-zh="统一登录" data-ru="Единый вход">تسجيل الدخول الموحد</a></div>`;
             mobileMenuContainer.innerHTML = mobileNavHTML;
             
             const mobileMenuButton = document.getElementById('mobile-menu-button');

@@ -147,7 +147,8 @@ CREATE TABLE IF NOT EXISTS `users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- bcrypt hash placeholder for demo accounts, set your own passwords
-SET @DEMO_HASH = '$2y$10$EizgI.1i0nE7V2mO9j3l4.W5z8d6C.K2/z.9V1/v.0f.z4e5A6B7';
+-- Demo accounts default password hash (bcrypt of 'password123')
+SET @DEMO_HASH = '$2y$10$cFqliyYVjUxmgARVOtuJMeoZNajRtQDehuQLeEMXMMe.pTGlPzc4m';
 
 INSERT INTO `users` (`id`,`email`,`password`,`type`,`first_name`,`last_name`,`avatar_url`,`class_id`,`details`) VALUES
 ('STU12345','student@school.com',@DEMO_HASH,'student','أحمد','علي','https://placehold.co/128x128/3B82F6/FFFFFF?text=A','C1','{"school":"مدرسة المستقبل الثانوية"}'),
@@ -194,3 +195,35 @@ CREATE TABLE IF NOT EXISTS report_submissions (
 );
 
 COMMIT;
+
+-- Optional: Account requests table for student/teacher signup workflow
+CREATE TABLE IF NOT EXISTS `account_requests` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `school_id` INT NULL,
+  `role` ENUM('student','teacher') NOT NULL,
+  `first_name` VARCHAR(100) NOT NULL,
+  `last_name` VARCHAR(100) NOT NULL,
+  `email` VARCHAR(255) NOT NULL,
+  `gender` VARCHAR(16) NULL,
+  `grade_level` VARCHAR(16) NULL,
+  `status` ENUM('pending','approved','rejected') NOT NULL DEFAULT 'pending',
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `decided_at` TIMESTAMP NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Optional: Device locks for special accounts (restrict devices)
+CREATE TABLE IF NOT EXISTS `device_locks` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `user_id` VARCHAR(64) NOT NULL,
+  `device_hash` VARCHAR(128) NOT NULL,
+  `label` VARCHAR(128) NULL,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY `u_user_device` (`user_id`,`device_hash`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Optional: Special accounts store (username + password hash)
+CREATE TABLE IF NOT EXISTS `special_accounts` (
+  `username` VARCHAR(128) PRIMARY KEY,
+  `password_hash` VARCHAR(255) NOT NULL,
+  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

@@ -59,12 +59,16 @@
       <p class="lead text-gray-300 mt-2 text-sm" data-ar="أدخل بيانات المدرسة للوصول إلى لوحة الإدارة" data-en="Enter your school credentials to access the admin panel">أدخل بيانات المدرسة للوصول إلى لوحة الإدارة</p>
     </div>
 
-    <form id="loginForm" autocomplete="on" class="mt-8 space-y-5">
-      
+    <!-- Role tabs removed: auto-detection is used -->
+    <div class="mt-6" style="display:none"></div>
+
+    <form id="loginForm" autocomplete="on" class="mt-4 space-y-5">
+      <input type="hidden" id="role" value="school">
+      <!-- Single identifier (username or email) + password -->
       <div>
-        <label for="username" class="text-sm font-medium text-gray-200 flex items-center gap-2 mb-2"><i class="fas fa-user w-4"></i><span data-ar="اسم المستخدم" data-en="Username">اسم المستخدم</span></label>
+        <label for="username" class="text-sm font-medium text-gray-200 flex items-center gap-2 mb-2"><i class="fas fa-user w-4"></i><span data-ar="اسم المستخدم أو البريد الإلكتروني" data-en="Username or Email">اسم المستخدم أو البريد الإلكتروني</span></label>
         <div class="relative">
-          <input id="username" name="username" type="text" inputmode="latin" autocomplete="username" required placeholder="school01" aria-required="true" class="form-input w-full bg-black/20 border-2 border-transparent rounded-lg px-4 py-2.5 text-white placeholder-gray-400 transition" />
+          <input id="username" name="username" type="text" inputmode="latin" autocomplete="username" required placeholder="school01 أو user@example.com" aria-required="true" class="form-input w-full bg-black/20 border-2 border-transparent rounded-lg px-4 py-2.5 text-white placeholder-gray-400 transition" />
         </div>
       </div>
 
@@ -75,6 +79,9 @@
           <button type="button" class="toggle-pass absolute inset-y-0 right-0 px-3 flex items-center text-gray-400 hover:text-white" aria-label="Toggle password" title="عرض/إخفاء"><i class="fa-regular fa-eye"></i></button>
         </div>
       </div>
+
+      <!-- Email field removed for auto-detection; using single identifier -->
+      <div id="emailBlock" class="hidden"></div>
       
       <div class="flex items-center justify-between">
           <label for="rememberMe" class="flex items-center text-sm cursor-pointer"><input id="rememberMe" type="checkbox" class="h-4 w-4 rounded bg-white/20 border-gray-500 text-blue-500 focus:ring-blue-500" /> <span data-ar="تذكرني على هذا الجهاز" data-en="Remember me on this device" class="ml-2 text-gray-300">تذكرني على هذا الجهاز</span></label>
@@ -121,6 +128,18 @@
       const hash = await crypto.subtle.digest('SHA-256', buf);
       const view = new Uint8Array(hash);
       return Array.from(view).map(b=>b.toString(16).padStart(2,'0')).join('');
+    }
+    async function deviceFingerprint(){
+      try {
+        const nav = navigator || {};
+        const scr = screen || {};
+        const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
+        const parts = [
+          nav.userAgent||'', nav.language||'', nav.platform||'',
+          (scr.width||'')+'x'+(scr.height||''), String(scr.colorDepth||''), tz
+        ].join('|');
+        return await sha256Hex(parts);
+      } catch { return ''; }
     }
     function b64dec(b){ try{ return atob(b); }catch{ return ''; } }
     function constCompareHex(a,b){
@@ -241,9 +260,12 @@
     function getLock(){ try{ return JSON.parse(sessionStorage.getItem(LOCK_KEY)||'{}'); }catch{ return {}; } }
     function setLock(v){ sessionStorage.setItem(LOCK_KEY, JSON.stringify(v)); }
 
-    const form = document.getElementById('loginForm');
+  const form = document.getElementById('loginForm');
+  const roleEl = document.getElementById('role');
     const userEl = document.getElementById('username');
     const passEl = document.getElementById('password');
+  const emailEl = document.getElementById('email');
+  const emailBlock = document.getElementById('emailBlock');
     const errorBox = document.getElementById('errorBox');
     const loading = document.getElementById('loading');
     const togglePassBtn = document.querySelector('.toggle-pass');
@@ -256,6 +278,39 @@
     passEl.addEventListener('paste', e=>e.preventDefault());
 
     function t(msgAr, msgEn){ return currentLanguage==='ar'? msgAr: msgEn; }
+
+    // Auto-detection (no tabs)
+    (function(){ roleEl.value = 'auto'; })();
+
+    function buildApiUrl(path){
+      path = String(path||'').replace(/^\/+/, '');
+      // compute base relative to this file's folder
+      const href = location.pathname;
+      const marker = 'Schools-sites';
+      let basePrefix = '../';
+      if(href.includes(marker)){
+        const after = href.split(marker)[1] || '';
+        const extraSegments = after.split('/').filter(s=>s.length>0 && s.indexOf('.')===-1);
+        basePrefix = '../'.repeat(1 + extraSegments.length);
+      }
+      return basePrefix + path;
+    }
+
+    function isEmail(str){ return /.+@.+\..+/.test(String(str||'')); }
+    async function trySchoolLocal(u, p){
+      // Try to match against local SCHOOL_DB by hashing with salts
+      for(const [sid, rec] of Object.entries(SCHOOL_DB)){
+        const [uH, pH] = await Promise.all([
+          sha256Hex(`${PEPPER}|${u}|${rec.uSalt}`),
+          sha256Hex(`${PEPPER}|${p}|${rec.pSalt}`)
+        ]);
+        const PH = PREHASH[sid];
+        if(PH && constCompareHex(uH, PH.uHash) && constCompareHex(pH, PH.pHash)){
+          return { sid, redirect: rec.redirect };
+        }
+      }
+      return null;
+    }
 
     form.addEventListener('submit', async (e)=>{
       e.preventDefault();
@@ -270,61 +325,70 @@
       }
       const u = (userEl.value||'').trim();
       const p = (passEl.value||'').trim();
-      if(!u || !p){
-        errorBox.textContent = t('يرجى إدخال اسم المستخدم وكلمة المرور','Enter username and password');
-        errorBox.classList.remove('hidden');
-        return false;
-      }
+      if(!u || !p){ errorBox.textContent = t('يرجى إدخال المعرف وكلمة المرور','Enter identifier and password'); errorBox.classList.remove('hidden'); return false; }
       loading.classList.remove('hidden');
       try{
-        let matched = null;
-        for(const [sid, rec] of Object.entries(SCHOOL_DB)){
-          const [uH, pH] = await Promise.all([
-            sha256Hex(`${PEPPER}|${u}|${rec.uSalt}`),
-            sha256Hex(`${PEPPER}|${p}|${rec.pSalt}`)
-          ]);
-          const PH = PREHASH[sid];
-          if(PH && constCompareHex(uH, PH.uHash) && constCompareHex(pH, PH.pHash)){
-            matched = { sid, redirect: rec.redirect };
-            break;
-          }
-        }
-        if(!matched){
-          const fails = (lock.fails||0)+1;
-          const backoff = Math.min(60000, Math.pow(2, Math.min(6, fails)) * 250);
-          const until = Date.now() + (fails>=5 ? backoff : 0);
-          setLock({ fails, until });
-          errorBox.textContent = t('بيانات الدخول غير صحيحة','Invalid credentials');
-          errorBox.classList.remove('hidden');
+        // 1) Try local school admin
+        const matched = await trySchoolLocal(u, p);
+        if(matched){
+          const token = Array.from(crypto.getRandomValues(new Uint8Array(24))).map(b=>b.toString(16).padStart(2,'0')).join('');
+          sessionStorage.setItem('authToken', token);
+          sessionStorage.setItem('userType', 'school');
+          sessionStorage.setItem('schoolId', matched.sid);
+          sessionStorage.setItem('loginTs', String(Date.now()));
+          try { const rec = SCHOOL_DB[matched.sid]||{}; localStorage.setItem('currentUser', JSON.stringify({ id: 'school:'+matched.sid, school_id: matched.sid, school_name: rec.friendlyName || matched.sid, role: 'school-admin' })); } catch(_){ }
+          try{
+            const remember = document.getElementById('rememberMe')?.checked;
+            if(remember){
+              localStorage.setItem('remember:school:username', userEl.value.trim());
+              if('credentials' in navigator){
+                try{ const cred = await navigator.credentials.create({ password: { id: userEl.value.trim(), password: passEl.value } }); if(cred) await navigator.credentials.store(cred); }catch{}
+              }
+            } else { localStorage.removeItem('remember:school:username'); }
+          }catch{}
+          setLock({ fails:0, until:0 });
+          window.location.href = matched.redirect;
           return false;
         }
-        
-        const token = Array.from(crypto.getRandomValues(new Uint8Array(24))).map(b=>b.toString(16).padStart(2,'0')).join('');
-        sessionStorage.setItem('authToken', token);
-        sessionStorage.setItem('userType', 'school');
-        sessionStorage.setItem('schoolId', matched.sid);
-        sessionStorage.setItem('loginTs', String(Date.now()));
-        try {
-          const rec = SCHOOL_DB[matched.sid]||{};
-          localStorage.setItem('currentUser', JSON.stringify({ id: 'school:'+matched.sid, school_id: matched.sid, school_name: rec.friendlyName || matched.sid, role: 'school-admin' }));
-        } catch(_){}
-        
-        try{
-          const remember = document.getElementById('rememberMe')?.checked;
-          if(remember){
-            localStorage.setItem('remember:school:username', userEl.value.trim());
-            if('credentials' in navigator){
-              try{
-                const cred = await navigator.credentials.create({ password: { id: userEl.value.trim(), password: passEl.value } });
-                if(cred) await navigator.credentials.store(cred);
-              }catch{}
-            }
-          } else {
-            localStorage.removeItem('remember:school:username');
-          }
-        }catch{}
-        setLock({ fails:0, until:0 });
-        window.location.href = matched.redirect;
+
+        // 2) JWT login attempts (order: director special, teacher, student, director email)
+        const apiUrl = buildApiUrl('api/api.php?action=login');
+        async function attempt(role, email){
+          const body = { email, password: p, role };
+          if(role==='director'){ try{ body.device_fingerprint = await deviceFingerprint(); }catch{} }
+          const res = await fetch(apiUrl, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
+          const data = await res.json().catch(()=>({}));
+          if(res.ok && data && data.ok){ return data; }
+          return null;
+        }
+
+        let data = null;
+        // director special username
+        if(u === '@mokha_manager'){ data = await attempt('director', u); }
+        // email-based detection
+        if(!data && isEmail(u)){
+          data = await attempt('teacher', u) || await attempt('student', u) || await attempt('director', u);
+        }
+        if(data){
+          localStorage.setItem('authToken', data.token);
+          localStorage.setItem('currentUser', JSON.stringify(data.user||{}));
+          setLock({ fails:0, until:0 });
+          const r = (data.user && data.user.type) || 'student';
+          const dest = r==='teacher' ? '../front-mocha-schools-website/teacher.html' : (r==='student' ? '../front-mocha-schools-website/student.html' : '../front-mocha-schools-website/directorate.html');
+          window.location.href = dest;
+          return false;
+        }
+
+        // No match -> error
+        const fails = (lock.fails||0)+1;
+        const backoff = Math.min(60000, Math.pow(2, Math.min(6, fails)) * 250);
+        const until = Date.now() + (fails>=5 ? backoff : 0);
+        setLock({ fails, until });
+        errorBox.textContent = isEmail(u)
+          ? t('تعذر تسجيل الدخول. تأكد من صحة البريد وكلمة المرور','Login failed. Check email and password')
+          : t('تعذر تسجيل الدخول. لحساب الطالب/المعلم استخدم البريد الإلكتروني.','Login failed. For student/teacher use your email.');
+        errorBox.classList.remove('hidden');
+        return false;
       } catch(err){
         console.error('login error', err);
         errorBox.textContent = t('حدث خطأ غير متوقع','Unexpected error');

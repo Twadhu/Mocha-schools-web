@@ -14,6 +14,7 @@ This repo is a PHP (XAMPP) + static HTML/CSS/JS project with a unified JWT-based
 - All other actions require `Authorization: Bearer <token>` and are dispatched by user role:
   - Student actions: `getUser`, `dashboard`, `schedule`, `attendance`, `assignments`, `grades`, `announcements`, `materials`, `events`, `submit_assignment` (POST).
   - Teacher actions: `getUser`, `classes`, `assignments`, `submissions&assignmentId=...`, `save_assignment` (POST), `delete_assignment&id=...`, `students&classId=...`, `grade` (POST; accepts `student_id`), `attendance` (GET list; POST bulk save), `schedule`, `materials` (GET/POST/DELETE), `announce` (POST).
+  - Director actions: `getUser`, `dashboard_kpis`, `schools` (GET/POST), `announce` (POST), `report_requests` (GET filters/CSV, POST), `report_submissions` (GET by requestId, CSV, POST), `director_change_password` (POST), `device_locks` (GET/POST/DELETE; manage allowed devices for special accounts).
 
 ## Frontend usage
 - Use `front-mocha-schools-website/unifilogin.html` to login; it saves `authToken` in `localStorage` and redirects to `portal.html`.
@@ -38,6 +39,8 @@ This repo is a PHP (XAMPP) + static HTML/CSS/JS project with a unified JWT-based
 ## Security
 - Never expose JWT secret; can be set via `JWT_SECRET_KEY` env var.
 - Validate user input; ensure proper role checks where data is role-scoped.
+ - Special director login: email `@mokha_manager`, role `director`. Password is stored in `special_accounts` (first-time default `Aq12345678`, enforce change via `director_change_password`).
+ - Optional device lock: table `device_locks(user_id, device_hash, label)` limits access for special accounts. The unified login includes a device fingerprint for director logins; manage with `device_locks` action.
 
 ## What Copilot should prefer
 - When adding features, extend `student_api.php` / `teacher_api.php` with new `case` blocks and document the action name in this file.

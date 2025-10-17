@@ -111,7 +111,7 @@
     let serverRows = [];
     let serverAvailable = false;
     try{
-      const data = await mkApi.apiJson('admin.php?path=teachers');
+      const data = await mkApi.apiJson('api.php?action=teachers');
       if(data?.ok){ serverAvailable = true; serverRows = Array.isArray(data.teachers)? data.teachers: []; }
     }catch{ serverAvailable = false; }
 
@@ -120,7 +120,7 @@
     async function loadSubjectsMap(){
       if(!serverAvailable) return;
       try{
-        const d = await mkApi.apiJson('admin.php?path=subjects');
+        const d = await mkApi.apiJson('api.php?action=subjects');
         if(d?.ok && Array.isArray(d.subjects)){
           subjectsByName = new Map(d.subjects.map(s=>[String(s.name).trim(), parseInt(s.id,10)]));
         }
@@ -146,7 +146,7 @@
           const first = nameParts[0]||'-';
           const last = nameParts.length>1 ? nameParts.slice(1).join(' ') : '-';
           const payload = { first_name:first, last_name:last, email, phone:null, specialization: st.specialization||null, subjects: subjectIds, classes: st.classes||[] };
-          const resp = await mkApi.apiJson('admin.php?path=teachers', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+          const resp = await mkApi.apiJson('api.php?action=teachers', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
           if(!resp?.ok){ throw new Error(resp?.message||'seed-import-failed'); }
         }
         localStorage.setItem(flagKey,'1');
@@ -167,7 +167,7 @@
         let id = subjectsByName.get(nm);
         if(!id){
           try{
-            const resp = await mkApi.apiJson('admin.php?path=subjects', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ name: nm }) });
+            const resp = await mkApi.apiJson('api.php?action=subjects', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ name: nm }) });
             if(resp?.ok && resp.id){ id = parseInt(resp.id,10); subjectsByName.set(nm, id); }
           }catch{}
         }
@@ -206,7 +206,7 @@
               const ok = await maybeImportAlNoorSeed();
               if(ok){
                 AppCore?.showToast?.(t('تم الاستيراد بنجاح','Imported successfully'),'success');
-                try{ const data = await mkApi.apiJson('admin.php?path=teachers'); if(data?.ok){ serverRows = data.teachers||[]; } }catch{}
+                try{ const data = await mkApi.apiJson('api.php?action=teachers'); if(data?.ok){ serverRows = data.teachers||[]; } }catch{}
                 const list = normalizeServer(serverRows||[]);
                 if(list.length){
                   teachers = list;
@@ -223,7 +223,7 @@
         }
         const imported = await maybeImportAlNoorSeed();
         if(imported){
-          try{ const data = await mkApi.apiJson('admin.php?path=teachers'); if(data?.ok){ serverRows = data.teachers||[]; } }catch{}
+          try{ const data = await mkApi.apiJson('api.php?action=teachers'); if(data?.ok){ serverRows = data.teachers||[]; } }catch{}
         }
         if((serverRows||[]).length===0){
           // fallback to local seeded view so the UI is not empty
@@ -270,9 +270,9 @@
         if(act==='delete'){
           if(confirm(t('هل أنت متأكد من رغبتك في حذف هذا المعلم؟','Are you sure to delete?'))){
             if(serverAvailable && !usedFallback){
-              try{ const d=await mkApi.apiJson(`admin.php?path=teachers/${id}`, { method:'DELETE' }); if(!d.ok) throw new Error(d.message||'Failed'); AppCore?.showToast(t('تم الحذف','Deleted'),'success'); }catch(err){ AppCore?.showToast(err.message||t('فشل الحذف','Delete failed'),'error'); return; }
+              try{ const d=await mkApi.apiJson(`api.php?action=teacher_delete&id=${id}`, { method:'DELETE' }); if(!d.ok) throw new Error(d.message||'Failed'); AppCore?.showToast(t('تم الحذف','Deleted'),'success'); }catch(err){ AppCore?.showToast(err.message||t('فشل الحذف','Delete failed'),'error'); return; }
               // Reload from server after delete
-              try{ const data = await mkApi.apiJson('admin.php?path=teachers'); if(data?.ok){ teachers = normalizeServer(data.teachers||[]); render(); } }catch{}
+              try{ const data = await mkApi.apiJson('api.php?action=teachers'); if(data?.ok){ teachers = normalizeServer(data.teachers||[]); render(); } }catch{}
             } else {
               teachers = teachers.filter(x=>x.id!==id); saveLocal(sid, teachers); render(); AppCore?.showToast(t('تم الحذف','Deleted'),'success');
             }
@@ -338,7 +338,7 @@
               // Update existing
               const nl = splitName(data.name);
               const payload = { first_name:nl.first, last_name:nl.last, email:data.email||undefined, phone:data.phone||undefined, specialization:data.specialization||undefined, status: mapStatusToApi(data.status), subjects: subjectIds, classes: data.classes };
-              const resp = await mkApi.apiJson(`admin.php?path=teachers/${data.id}`, { method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+              const resp = await mkApi.apiJson(`api.php?action=teacher_update&id=${data.id}`, { method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
               if(!resp?.ok) throw new Error(resp.message||'Failed to update');
               AppCore?.showToast(t('تم الحفظ','Saved'),'success');
             }else{
@@ -346,7 +346,7 @@
               if(!data.email){ AppCore?.showToast(t('الرجاء إدخال البريد الإلكتروني','Please enter email'),'error'); return; }
               const nl = splitName(data.name);
               const payload = { first_name:nl.first, last_name:nl.last, email:data.email, phone:data.phone||undefined, specialization:data.specialization||undefined, subjects: subjectIds, classes: data.classes };
-              const resp = await mkApi.apiJson('admin.php?path=teachers', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+              const resp = await mkApi.apiJson('api.php?action=teachers', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
               if(!resp?.ok){ throw new Error(resp.message||'Failed to create'); }
               AppCore?.showToast(t('تمت الإضافة','Created'),'success');
             }

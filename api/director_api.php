@@ -112,9 +112,23 @@ switch ($action) {
 
     case 'report_requests':
         if ($method === 'GET') {
-            // List report requests if table exists, else return empty array
+            // Filters: type, from, to
+            $type = $_GET['type'] ?? null; $from = $_GET['from'] ?? null; $to = $_GET['to'] ?? null;
             try {
-                $rows = $pdo->query('SELECT * FROM report_requests ORDER BY created_at DESC')->fetchAll(PDO::FETCH_ASSOC);
+                $sql = 'SELECT * FROM report_requests WHERE 1=1'; $args=[];
+                if ($type) { $sql.=' AND type=?'; $args[]=$type; }
+                if ($from) { $sql.=' AND created_at >= ?'; $args[]=$from; }
+                if ($to) { $sql.=' AND created_at <= ?'; $args[]=$to; }
+                $sql .= ' ORDER BY created_at DESC';
+                $st=$pdo->prepare($sql); $st->execute($args); $rows = $st->fetchAll(PDO::FETCH_ASSOC);
+                // CSV export if format=csv
+                if (($_GET['format'] ?? '') === 'csv') {
+                    header('Content-Type: text/csv; charset=utf-8');
+                    header('Content-Disposition: attachment; filename="report_requests.csv"');
+                    $out=fopen('php://output','w'); fputcsv($out, ['id','requested_by','type','params','created_at']);
+                    foreach($rows as $r){ fputcsv($out,[$r['id'],$r['requested_by'],$r['type'],$r['params'],$r['created_at']]); }
+                    fclose($out); exit;
+                }
                 send_json(['ok'=>true,'requests'=>$rows]);
             } catch (Throwable $e) {
                 send_json(['ok'=>true,'requests'=>[], 'note'=>'report_requests table not found']);
@@ -142,9 +156,16 @@ switch ($action) {
             $reqId = isset($_GET['requestId']) ? (int)$_GET['requestId'] : 0;
             if ($reqId <= 0) send_json(['ok'=>false,'error'=>'validation','message'=>'requestId required'], 422);
             try {
-                $stmt = $pdo->prepare('SELECT * FROM report_submissions WHERE request_id=? ORDER BY submitted_at DESC');
+                $stmt = $pdo->prepare('SELECT rs.*, sc.name AS school_name FROM report_submissions rs JOIN schools sc ON sc.id=rs.school_id WHERE rs.request_id=? ORDER BY rs.submitted_at DESC');
                 $stmt->execute([$reqId]);
                 $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                if (($_GET['format'] ?? '') === 'csv') {
+                    header('Content-Type: text/csv; charset=utf-8');
+                    header('Content-Disposition: attachment; filename="report_submissions_'.intval($reqId).'.csv"');
+                    $out=fopen('php://output','w'); fputcsv($out, ['id','request_id','school_id','school_name','submitted_by','data','submitted_at']);
+                    foreach($rows as $r){ fputcsv($out,[$r['id'],$r['request_id'],$r['school_id'],$r['school_name'],$r['submitted_by'],$r['data'],$r['submitted_at']]); }
+                    fclose($out); exit;
+                }
                 send_json(['ok'=>true,'submissions'=>$rows]);
             } catch (Throwable $e) {
                 send_json(['ok'=>true,'submissions'=>[], 'note'=>'report_submissions table not found']);
@@ -166,6 +187,60 @@ switch ($action) {
         } else {
             send_json(['ok'=>false,'error'=>'method_not_allowed'], 405);
         }
+        break;
+
+    case 'director_change_password':
+        if ($method !== 'POST') send_json(['ok'=>false,'error'=>'method_not_allowed'],405);
+        $payload = json_decode(file_get_contents('php://input'), true) ?: [];
+        $old = $payload['old_password'] ?? '';
+        $new = $payload['new_password'] ?? '';
+        if(strlen($new) < 8) send_json(['ok'=>false,'error'=>'validation','message'=>'weak password'],422);
+        try {
+            // Change for special account '@mokha_manager' if exists, otherwise noop
+            $pdo->exec("CREATE TABLE IF NOT EXISTS special_accounts (username VARCHAR(128) PRIMARY KEY, password_hash VARCHAR(255) NOT NULL, updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP)");
+            $st = $pdo->prepare('SELECT password_hash FROM special_accounts WHERE username=?');
+            $st->execute(['@mokha_manager']);
+            $row = $st->fetch(PDO::FETCH_ASSOC);
+            if($row){
+                if(!password_verify($old, $row['password_hash'])) send_json(['ok'=>false,'error'=>'forbidden','message'=>'bad password'],403);
+                $hash = password_hash($new, PASSWORD_BCRYPT);
+                $up = $pdo->prepare('UPDATE special_accounts SET password_hash=? WHERE username=?');
+                $up->execute([$hash, '@mokha_manager']);
+            } else {
+                // Initialize on first change if not present, require known default old password
+                if($old !== 'Aq12345678') send_json(['ok'=>false,'error'=>'forbidden'],403);
+                $hash = password_hash($new, PASSWORD_BCRYPT);
+                $ins = $pdo->prepare('INSERT INTO special_accounts (username,password_hash) VALUES (?,?)');
+                $ins->execute(['@mokha_manager', $hash]);
+            }
+            send_json(['ok'=>true]);
+        } catch (Throwable $e) {
+            send_json(['ok'=>false,'error'=>'failed'],500);
+        }
+        break;
+
+    case 'device_locks':
+        // Manage allowed devices for a user (default: special director account)
+        $targetUser = $_GET['user'] ?? '@mokha_manager';
+        try { $pdo->query('SELECT 1 FROM device_locks LIMIT 1'); } catch (Throwable $e) { send_json(['ok'=>true,'items'=>[],'note'=>'device_locks table not found']); }
+        if ($method === 'GET') {
+            $st = $pdo->prepare('SELECT id, device_hash, label, created_at FROM device_locks WHERE user_id=? ORDER BY created_at DESC');
+            $st->execute([$targetUser]);
+            send_json(['ok'=>true,'items'=>$st->fetchAll(PDO::FETCH_ASSOC)]);
+        } elseif ($method === 'POST') {
+            $b = json_decode(file_get_contents('php://input'), true) ?: [];
+            $hash = trim($b['device_hash'] ?? ''); $label = trim($b['label'] ?? '');
+            if ($hash==='') send_json(['ok'=>false,'error'=>'validation','message'=>'device_hash required'],422);
+            $ins = $pdo->prepare('INSERT INTO device_locks (user_id, device_hash, label) VALUES (?,?,?)');
+            $ins->execute([$targetUser, $hash, $label ?: null]);
+            send_json(['ok'=>true,'id'=>$pdo->lastInsertId()]);
+        } elseif ($method === 'DELETE') {
+            $hash = $_GET['device_hash'] ?? '';
+            if ($hash==='') send_json(['ok'=>false,'error'=>'validation','message'=>'device_hash required'],422);
+            $del = $pdo->prepare('DELETE FROM device_locks WHERE user_id=? AND device_hash=?');
+            $del->execute([$targetUser, $hash]);
+            send_json(['ok'=>true]);
+        } else send_json(['ok'=>false,'error'=>'method_not_allowed'],405);
         break;
 
     default:

@@ -94,25 +94,62 @@
                 });
             });
 
-            form.addEventListener('submit', (event) => {
+            async function buildApiUrl(path){
+                path = String(path||'').replace(/^\/+/, '');
+                const href = location.pathname;
+                const marker = 'front-mocha-schools-website';
+                let basePrefix = '../';
+                if(href.includes(marker)){
+                    const after = href.split(marker)[1] || '';
+                    const extraSegments = after.split('/').filter(s=>s.length>0 && s.indexOf('.')===-1);
+                    basePrefix = '../'.repeat(1 + extraSegments.length);
+                }
+                return basePrefix + path;
+            }
+
+            form.addEventListener('submit', async (event) => {
                 event.preventDefault();
+                const role = document.querySelector('input[name="role"]:checked').value;
+                const fullName = document.getElementById('fullName').value.trim();
+                const dob = document.getElementById('dob').value;
                 const school = document.getElementById('school').value;
                 const gradeLevel = document.getElementById('gradeLevel').value;
 
                 formContainer.classList.add('hidden');
                 messageContainer.classList.remove('hidden');
 
-                if (school === 'other' || (gradeLevel === 'graduate' && document.querySelector('input[name="role"]:checked').value === 'student')) {
+                if (school === 'other' || (gradeLevel === 'graduate' && role === 'student')) {
                     messageContainer.innerHTML = `
                         <h2 class="text-2xl font-bold text-yellow-600" data-ar="ملاحظة هامة" data-en="Important Note">ملاحظة هامة</h2>
                         <p class="mt-4 text-gray-700" data-ar="هذه المنصة مخصصة حاليًا لطلاب المدارس الشريكة لنا. لكن يمكنك الاستفادة من خدماتنا ومواردنا العامة عبر النقر على الزر أدناه." data-en="This platform is currently dedicated to students of our partner schools. However, you can benefit from our public services and resources by clicking the button below.">هذه المنصة مخصصة حاليًا لطلاب المدارس الشريكة لنا.</p>
                         <a href="start-now.html" class="mt-6 inline-block bg-blue-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-700 transition" data-ar="ابدأ الآن" data-en="Start Now">ابدأ الآن</a>
                     `;
-                } else {
+                    return;
+                }
+
+                // Split full name into first/last for backend
+                const [first_name, ...rest] = fullName.split(' ');
+                const last_name = rest.join(' ') || '-';
+                const email = `${(first_name||'user').toLowerCase()}.${Date.now()}@example.com`; // temporary placeholder; real email field can be added later
+
+                try {
+                    const res = await fetch(await buildApiUrl('api/account-requests.php'), {
+                        method:'POST', headers:{'Content-Type':'application/json'},
+                        body: JSON.stringify({
+                            role, school_id: parseInt(school,10), first_name, last_name, email,
+                            gender: null, grade_level: role==='student'? gradeLevel : null
+                        })
+                    });
+                    const data = await res.json().catch(()=>({ok:false}));
+                    if(!res.ok || !data || data.ok===false){ throw new Error('failed'); }
                     messageContainer.innerHTML = `
-                        <h2 class="text-2xl font-bold text-green-600" data-ar="تم إرسال طلبك بنجاح!" data-en="Request Sent Successfully!">تم إرسال طلبك بنجاح!</h2>
-                        <p class="mt-4 text-gray-700" data-ar="لقد تم إرسال طلبك إلى إدارة المدرسة للمراجعة. سيتم إعلامك بحالة الطلب عبر البريد الإلكتروني. لا يمكنك الدخول إلى البوابة حتى تتم الموافقة على طلبك." data-en="Your request has been sent to the school administration for review. You will be notified of the status via email. You cannot log in to the portal until your request is approved.">لقد تم إرسال طلبك للمراجعة.</p>
-                    `;
+                        <h2 class="text-2xl font-bold text-green-600">تم إرسال طلبك بنجاح!</h2>
+                        <p class="mt-4 text-gray-700">تم إرسال طلبك إلى إدارة المدرسة للمراجعة. بعد الموافقة سيتمكن ${role==='student'?'الطالب':'المعلم'} من الدخول عبر <a class="text-blue-600 underline" href="../manager/school-login.html">التسجيل الموحد</a>.</p>
+                        <p class="mt-2 text-gray-600">لمتابعة الأنشطة والمنح يمكنك تصفح الموقع.</p>`;
+                } catch(e) {
+                    messageContainer.innerHTML = `
+                        <h2 class="text-2xl font-bold text-red-600">تعذر إرسال الطلب</h2>
+                        <p class="mt-4 text-gray-700">حاول لاحقاً أو تواصل مع الإدارة.</p>`;
                 }
             });
         });

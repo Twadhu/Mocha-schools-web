@@ -92,7 +92,7 @@
             if(grade) qs.set('grade', grade);
             if(search) qs.set('search', search);
             qs.set('page', page); qs.set('pageSize', pageSize);
-            const data = await mkApi.apiJson(`admin.php?path=students&${qs.toString()}`);
+            const data = await mkApi.apiJson(`api.php?action=students&${qs.toString()}`);
             if(!data.ok) throw new Error(data.message||'فشل التحميل');
             const students = (data.students||[]).map(r=>({
               id:r.id, firstName:r.first_name||r.firstName||'', fatherName:'', grandfatherName:'', lastName:r.last_name||r.lastName||'', grade:r.grade_level||r.grade||'', dob:r.dob||'', email:r.email||'', school:''
@@ -101,16 +101,16 @@
         }
         case 'CREATE_STUDENT':{
           const body={ first_name:payload.firstName, last_name:payload.lastName, email:payload.email, grade_level:payload.grade, dob:payload.dob||null, status:'active'};
-          const res = await mkApi.apiJson('admin.php?path=students',{method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)});
+          const res = await mkApi.apiJson('api.php?action=students',{method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)});
           if(!res.ok) throw new Error(res.message||'تعذر الإضافة'); return res;
         }
         case 'UPDATE_STUDENT':{
           const body={ first_name:payload.firstName, last_name:payload.lastName, grade_level:payload.grade, dob:payload.dob||null, status:'active'};
-          const res = await mkApi.apiJson(`admin.php?path=students/${payload.id}`,{method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)});
+          const res = await mkApi.apiJson(`api.php?action=students_update&id=${encodeURIComponent(payload.id)}`,{method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)});
           if(!res.ok) throw new Error(res.message||'تعذر التحديث'); return res;
         }
         case 'DELETE_STUDENT':{
-          const resRaw = await mkApi.apiFetch(`admin.php?path=students/${payload.id}`, { method:'DELETE' });
+          const resRaw = await mkApi.apiFetch(`api.php?action=students_delete&id=${encodeURIComponent(payload.id)}`, { method:'DELETE' });
           const res = await resRaw.json().catch(()=>({ok:false}));
           if(!res.ok) throw new Error(res.message||'تعذر الحذف'); return res;
         }
@@ -230,7 +230,7 @@
       this.ensureQrLibs().then(()=>drawQR(currentPayload));
       wrap.querySelector('#btnGenAccess').addEventListener('click', async ()=>{
         try{
-          const data = await mkApi.apiJson(`admin.php?path=students/${student.id}/access-code`);
+          const data = await mkApi.apiJson(`api.php?action=student_access_code&studentId=${encodeURIComponent(student.id)}`);
           if(!data.ok) throw new Error(data.message||'فشل توليد الرمز');
           currentPayload = data.payload || currentPayload; drawQR(currentPayload);
           const exp = data.exp ? new Date(data.exp*1000).toLocaleString(App.currentLang==='ar'?'ar-EG':'en-US') : '';

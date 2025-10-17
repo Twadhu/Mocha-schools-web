@@ -1,9 +1,9 @@
 (function(){
   if(window.AppCore){ AppCore.registerTranslations({ ar:{ addResult:'إضافة نتيجة', gradesSubtitle:'عرض وإدارة درجات الطلاب', firstScore:'درجة أولى', finalScore:'درجة نهائية', subject:'المادة', term:'الفصل', student:'الطالب', save:'حفظ', gradeLevel:'الصف' }, en:{ addResult:'Add Result', gradesSubtitle:'View & manage student grades', firstScore:'First', finalScore:'Final', subject:'Subject', term:'Term', student:'Student', save:'Save', gradeLevel:'Grade'} }); }
   function t(a,b){ return (window.App?.currentLang||'ar')==='ar'?a:b; }
-  async function fetchScoreLimits(){ const d=await mkApi.apiJson('admin.php?path=score-limits'); return d; }
-  async function fetchRoster(grade,term,year){ const qs=new URLSearchParams({grade,term,year}); const d=await mkApi.apiJson('admin.php?path=results&'+qs.toString()); if(!d.ok) throw new Error(d.message||'failed'); return d.items||[]; }
-  async function upsert(student_id, subject, term, year, first, final){ const d=await mkApi.apiJson('admin.php?path=results',{method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({student_id,subject,term,year,first,final})}); if(!d.ok) throw new Error(d.message||'failed'); }
+  async function fetchScoreLimits(){ const d=await mkApi.apiJson('api.php?action=score_limits'); return d; }
+  async function fetchRoster(grade,term,year){ const qs=new URLSearchParams({grade,term,year}); const d=await mkApi.apiJson('api.php?action=subject_results&'+qs.toString()); if(!d.ok) throw new Error(d.message||'failed'); return d.items||[]; }
+  async function upsert(student_id, subject, term, year, first, final){ const d=await mkApi.apiJson('api.php?action=results',{method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({student_id,subject,term,year,first,final})}); if(!d.ok) throw new Error(d.message||'failed'); }
   window.initGrades = async function(){
     // Basic interactive form
     const gradeSel=document.getElementById('gradesGradeSelect');
