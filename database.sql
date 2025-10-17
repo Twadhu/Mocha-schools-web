@@ -136,7 +136,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   `id` varchar(20) NOT NULL,
   `email` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
-  `type` enum('student','teacher','director') NOT NULL,
+  `type` enum('student','teacher','director','manager') NOT NULL,
   `first_name` varchar(100) NOT NULL,
   `last_name` varchar(100) NOT NULL,
   `avatar_url` text DEFAULT NULL,

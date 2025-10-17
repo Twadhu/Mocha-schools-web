@@ -23,7 +23,7 @@ if ($method === 'POST' && $action === 'login') {
     $password = $data['password'] ?? '';
     $role = $data['role'] ?? '';
 
-    if (!$email || !$password || !in_array($role, ['student','teacher','director'], true)) {
+    if (!$email || !$password || !in_array($role, ['student','teacher','director','manager'], true)) {
         send_json(['ok'=>false,'message'=>'البيانات غير مكتملة.'], 400);
     }
 
@@ -74,6 +74,9 @@ if ($userRole === 'student') {
     exit;
 } elseif ($userRole === 'director') {
     require __DIR__.'/director_api.php';
+    exit;
+} elseif ($userRole === 'manager') {
+    require __DIR__.'/manager_api.php';
     exit;
 }
 
